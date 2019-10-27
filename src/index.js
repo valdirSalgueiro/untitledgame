@@ -54,7 +54,7 @@ function App() {
           <Planets />
           <Enemies />
           <Rig>
-            <Ship data={{ isPlayer: true }} />
+            <Ship />
           </Rig>
         </Suspense>
         <Effects />

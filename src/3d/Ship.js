@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { useFrame, useLoader } from 'react-three-fiber'
-import React, { useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
 import useStore from '../store'
 
 const geometry = new THREE.BoxBufferGeometry(1, 1, 40)
@@ -12,12 +12,7 @@ const crossMaterial = new THREE.MeshBasicMaterial({ color: hotpink, fog: false }
 const position = new THREE.Vector3()
 const direction = new THREE.Vector3()
 
-export default function Ship(data) {
-  return <Drone data={data} />
-}
-
-const Drone = React.memo(({ data }) => {
-  const isPlayer = data.data.isPlayer
+export default function Ship() {
   const gltf = useLoader(GLTFLoader, '/ship.gltf')
   const mutation = useStore(state => state.mutation)
   const { clock, mouse, ray } = mutation
@@ -29,41 +24,33 @@ const Drone = React.memo(({ data }) => {
   const cross = useRef()
   const target = useRef()
 
-  useEffect(() => {
-    if (!isPlayer) {
-      main.current.position.copy(data.data.offset)
-    }
-  }, [])
-
   useFrame(() => {
-    if (isPlayer) {
-      main.current.rotation.z += (-mouse.x / 500 - main.current.rotation.z) * 0.1
-      main.current.rotation.x += (-mouse.y / 1200 - main.current.rotation.x) * 0.1
-      main.current.rotation.y += (-mouse.x / 1200 - main.current.rotation.y) * 0.1
-      main.current.position.x += (mouse.x / 10 - main.current.position.x) * 0.1
-      main.current.position.y += (25 + -mouse.y / 10 - main.current.position.y) * 0.1
+    main.current.rotation.z += (-mouse.x / 500 - main.current.rotation.z) * 0.1
+    main.current.rotation.x += (-mouse.y / 1200 - main.current.rotation.x) * 0.1
+    main.current.rotation.y += (-mouse.x / 1200 - main.current.rotation.y) * 0.1
+    main.current.position.x += (mouse.x / 10 - main.current.position.x) * 0.1
+    main.current.position.y += (25 + -mouse.y / 10 - main.current.position.y) * 0.1
+    exhaust.current.scale.x = 1 + Math.sin(clock.getElapsedTime() * 200)
+    exhaust.current.scale.y = 1 + Math.sin(clock.getElapsedTime() * 200)
 
-      // Get ships orientation and save it to the stores ray
-      main.current.getWorldPosition(position)
-      main.current.getWorldDirection(direction)
-      ray.origin.copy(position)
-      ray.direction.copy(direction.negate())
-      mutation.position.copy(position)
-      mutation.direction.copy(direction)
-
-      exhaust.current.scale.x = 1 + Math.sin(clock.getElapsedTime() * 200)
-      exhaust.current.scale.y = 1 + Math.sin(clock.getElapsedTime() * 200)
-      crossMaterial.color = mutation.hits ? lightgreen : hotpink
-      cross.current.visible = !mutation.hits
-      target.current.visible = !!mutation.hits
-    }
     for (let i = 0; i < lasers.length; i++) {
       const group = laserGroup.current.children[i]
       group.position.z -= 10
     }
     laserLight.current.intensity += ((lasers.length && Date.now() - lasers[lasers.length - 1] < 100 ? 20 : 0) - laserLight.current.intensity) * 0.3
 
+    // Get ships orientation and save it to the stores ray
+    main.current.getWorldPosition(position)
+    main.current.getWorldDirection(direction)
+    ray.origin.copy(position)
+    ray.direction.copy(direction.negate())
+    mutation.position.copy(position)
+    mutation.direction.copy(direction)
+
     // ...
+    crossMaterial.color = mutation.hits ? lightgreen : hotpink
+    cross.current.visible = !mutation.hits
+    target.current.visible = !!mutation.hits
   })
 
   return (
@@ -133,4 +120,4 @@ const Drone = React.memo(({ data }) => {
       </mesh>
     </group>
   )
-})
+}
