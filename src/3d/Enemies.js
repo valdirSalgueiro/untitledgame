@@ -1,12 +1,12 @@
 import * as THREE from 'three'
-import React, { useRef } from 'react'
-import { useLoader, useFrame } from 'react-three-fiber'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { useFrame, useLoader } from 'react-three-fiber'
+import React, { useRef } from 'react'
 import useStore from '../store'
 
 export default function Enemies() {
   const enemies = useStore(state => state.enemies)
-  return enemies.map((data, i) => <Drone key={i} data={data} />)
+  return enemies.map((data, i) => <Drone data={data} key={i} />)
 }
 
 const box = new THREE.Box3()
@@ -26,14 +26,14 @@ const Drone = React.memo(({ data }) => {
 
   return (
     <group ref={ref} scale={[5, 5, 5]}>
-      <mesh position={[0, 0, 50]} rotation={[Math.PI / 2, 0, 0]} material={glowMaterial}>
-        <cylinderBufferGeometry attach="geometry" args={[0.25, 0.25, 100, 4]} />
+      <mesh material={glowMaterial} position={[0, 0, 50]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderBufferGeometry args={[0.25, 0.25, 100, 4]} attach="geometry" />
       </mesh>
       <mesh name="Sphere_DroneGlowmat_0">
         <bufferGeometry attach="geometry" {...gltf.__$[7].geometry} />
         <meshStandardMaterial attach="material" {...gltf.__$[7].material} name="DroneGlowmat" />
       </mesh>
-      <mesh name="Sphere_Body_0" material={glowMaterial}>
+      <mesh material={glowMaterial} name="Sphere_Body_0">
         <bufferGeometry attach="geometry" {...gltf.__$[8].geometry} />
         <meshStandardMaterial attach="material" {...gltf.__$[8].material} name="Body" />
       </mesh>

@@ -9,7 +9,7 @@ const game = createGame()
 let maxConcurrentConnections = 15
 
 app.use(express.static(path.join(__dirname, 'build')))
-app.get('/', function (req, res) {
+app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'build', 'index.html'))
 })
 
@@ -17,7 +17,7 @@ setInterval(() => {
   io.emit('concurrent-connections', io.engine.clientsCount)
 }, 5000)
 
-io.on('connection', function (socket) {
+io.on('connection', function(socket) {
   const admin = socket.handshake.query.admin
 
   if (io.engine.clientsCount > maxConcurrentConnections && !admin) {
@@ -35,7 +35,7 @@ io.on('connection', function (socket) {
     newState: playerState
   })
 
-  socket.on('player-move', (direction) => {
+  socket.on('player-move', direction => {
     game.movePlayer(socket.id, direction)
 
     const fruitColisionIds = game.checkForFruitColision()
@@ -54,13 +54,24 @@ io.on('connection', function (socket) {
     }
   })
 
+  socket.on('player-state', state => {
+    // game.movePlayer(socket.id, direction)
+    console.log(state.position)
+
+    // const fruitColisionIds = game.checkForFruitColision()
+    // socket.broadcast.emit('player-update', {
+    //   socketId: socket.id,
+    //   newState: game.players[socket.id]
+    // })
+  })
+
   socket.on('disconnect', () => {
     game.removePlayer(socket.id)
     socket.broadcast.emit('player-remove', socket.id)
   })
 
   let fruitGameInterval
-  socket.on('admin-start-fruit-game', (interval) => {
+  socket.on('admin-start-fruit-game', interval => {
     console.log('> Fruit Game start')
     clearInterval(fruitGameInterval)
 
@@ -83,16 +94,16 @@ io.on('connection', function (socket) {
     io.emit('bootstrap', game)
   })
 
-  socket.on('admin-concurrent-connections', (newConcurrentConnections) => {
+  socket.on('admin-concurrent-connections', newConcurrentConnections => {
     maxConcurrentConnections = newConcurrentConnections
   })
 })
 
-server.listen(3000, function () {
+server.listen(3000, function() {
   console.log('> Server listening on port:', 3000)
 })
 
-function createGame () {
+function createGame() {
   console.log('> Starting new game')
 
   const game = {
@@ -109,19 +120,19 @@ function createGame () {
     clearScores
   }
 
-  function addPlayer (socketId) {
-    return game.players[socketId] = {
+  function addPlayer(socketId) {
+    return (game.players[socketId] = {
       x: Math.floor(Math.random() * game.canvasWidth),
       y: Math.floor(Math.random() * game.canvasHeight),
       score: 0
-    }
+    })
   }
 
-  function removePlayer (socketId) {
+  function removePlayer(socketId) {
     delete game.players[socketId]
   }
 
-  function movePlayer (socketId, direction) {
+  function movePlayer(socketId, direction) {
     const player = game.players[socketId]
 
     if (direction === 'left' && player.x - 1 >= 0) {
@@ -143,7 +154,7 @@ function createGame () {
     return player
   }
 
-  function addFruit () {
+  function addFruit() {
     const fruitRandomId = Math.floor(Math.random() * 10000000)
     const fruitRandomX = Math.floor(Math.random() * game.canvasWidth)
     const fruitRandomY = Math.floor(Math.random() * game.canvasHeight)
@@ -168,11 +179,11 @@ function createGame () {
     }
   }
 
-  function removeFruit (fruitId) {
+  function removeFruit(fruitId) {
     delete game.fruits[fruitId]
   }
 
-  function checkForFruitColision () {
+  function checkForFruitColision() {
     for (const fruitId in game.fruits) {
       const fruit = game.fruits[fruitId]
 
@@ -192,7 +203,7 @@ function createGame () {
     }
   }
 
-  function clearScores () {
+  function clearScores() {
     for (const socketId in game.players) {
       game.players[socketId].score = 0
     }

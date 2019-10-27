@@ -1,9 +1,9 @@
 import * as THREE from 'three'
+import * as audio from './audio'
 import { Curves } from 'three/examples/jsm/curves/CurveExtras'
 import { addEffect } from 'react-three-fiber'
 import create from 'zustand'
 import io from 'socket.io-client'
-import * as audio from './audio'
 
 let guid = 1
 
@@ -30,19 +30,14 @@ const [useStore, api] = create((set, get) => {
     mutation: {
       t: 0,
       position: new THREE.Vector3(),
+      direction: new THREE.Vector3(),
       startTime: Date.now(),
 
       track,
       scale: 1,
       fov: 70,
       hits: false,
-      particles: randomData(
-        3000,
-        track,
-        100,
-        1,
-        () => 0.5 + Math.random() * 0.5
-      ),
+      particles: randomData(3000, track, 100, 1, () => 0.5 + Math.random() * 0.5),
       looptime: 40 * 1000,
       binormal: new THREE.Vector3(),
       normal: new THREE.Vector3(),
@@ -57,7 +52,7 @@ const [useStore, api] = create((set, get) => {
     },
 
     actions: {
-      init (camera) {
+      init(camera) {
         const { mutation, actions } = get()
 
         set({ camera })
@@ -67,7 +62,7 @@ const [useStore, api] = create((set, get) => {
         addEffect(() => {
           const { rocks, enemies } = get()
 
-          const time = Date.now()          
+          const time = Date.now()
 
           // test for hits
           const r = rocks.filter(actions.test)
@@ -77,37 +72,27 @@ const [useStore, api] = create((set, get) => {
           mutation.hits = a.length
           if (previous === 0 && mutation.hits) playAudio(audio.click)
           const lasers = get().lasers
-          if (
-            mutation.hits &&
-            lasers.length &&
-            time - lasers[lasers.length - 1] < 100
-          ) {
+          if (mutation.hits && lasers.length && time - lasers[lasers.length - 1] < 100) {
             const updates = a.map(data => ({ time: Date.now(), ...data }))
             set(state => ({ explosions: [...state.explosions, ...updates] }))
             clearTimeout(cancelExplosionTO)
             cancelExplosionTO = setTimeout(
               () =>
                 set(state => ({
-                  explosions: state.explosions.filter(
-                    ({ time }) => Date.now() - time <= 1000
-                  )
+                  explosions: state.explosions.filter(({ time }) => Date.now() - time <= 1000)
                 })),
               1000
             )
             set(state => ({
               points: state.points + r.length * 100 + e.length * 200,
-              rocks: state.rocks.filter(
-                rock => !r.find(r => r.guid === rock.guid)
-              ),
-              enemies: state.enemies.filter(
-                enemy => !e.find(e => e.guid === enemy.guid)
-              )
+              rocks: state.rocks.filter(rock => !r.find(r => r.guid === rock.guid)),
+              enemies: state.enemies.filter(enemy => !e.find(e => e.guid === enemy.guid))
             }))
           }
           // if (a.some(data => data.distance < 15)) set(state => ({ health: state.health - 1 }))
         })
       },
-      shoot () {
+      shoot() {
         set(state => ({ lasers: [...state.lasers, Date.now()] }))
         clearTimeout(cancelLaserTO)
         cancelLaserTO = setTimeout(
@@ -119,23 +104,17 @@ const [useStore, api] = create((set, get) => {
         )
         playAudio(audio.zap, 0.5)
       },
-      toggleSound (sound = !get().sound) {
+      toggleSound(sound = !get().sound) {
         set({ sound })
         playAudio(audio.engine, 1, true)
         playAudio(audio.engine2, 0.3, true)
         playAudio(audio.bg, 1, true)
       },
-      updateMouse ({ clientX: x, clientY: y }) {
-        get().mutation.mouse.set(
-          x - window.innerWidth / 2,
-          y - window.innerHeight / 2
-        )
-        get().mutation.mouseRelative.set(
-          -0.5 + x / window.innerWidth,
-          -0.5 + y / window.innerHeight
-        )
+      updateMouse({ clientX: x, clientY: y }) {
+        get().mutation.mouse.set(x - window.innerWidth / 2, y - window.innerHeight / 2)
+        get().mutation.mouseRelative.set(-0.5 + x / window.innerWidth, -0.5 + y / window.innerHeight)
       },
-      test (data) {
+      test(data) {
         box.min.copy(data.offset)
         box.max.copy(data.offset)
         box.expandByScalar(data.size * data.scale)
@@ -148,20 +127,12 @@ const [useStore, api] = create((set, get) => {
   }
 })
 
-function randomData (count, track, radius, size, scale) {
+function randomData(count, track, radius, size, scale) {
   return new Array(count).fill().map(() => {
     const t = Math.random()
     const pos = track.parameters.path.getPointAt(t)
     pos.multiplyScalar(15)
-    const offset = pos
-      .clone()
-      .add(
-        new THREE.Vector3(
-          -radius + Math.random() * radius * 2,
-          -radius + Math.random() * radius * 2,
-          -radius + Math.random() * radius * 2
-        )
-      )
+    const offset = pos.clone().add(new THREE.Vector3(-radius + Math.random() * radius * 2, -radius + Math.random() * radius * 2, -radius + Math.random() * radius * 2))
     const speed = 0.1 + Math.random()
     return {
       guid: guid++,
@@ -178,7 +149,7 @@ function randomData (count, track, radius, size, scale) {
   })
 }
 
-function playAudio (audio, volume = 1, loop = false) {
+function playAudio(audio, volume = 1, loop = false) {
   if (api.getState().sound) {
     audio.currentTime = 0
     audio.volume = volume

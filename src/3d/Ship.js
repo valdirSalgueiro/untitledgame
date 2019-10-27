@@ -1,7 +1,7 @@
 import * as THREE from 'three'
-import React, { useRef } from 'react'
-import { useLoader, useFrame } from 'react-three-fiber'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { useFrame, useLoader } from 'react-three-fiber'
+import React, { useRef } from 'react'
 import useStore from '../store'
 
 const geometry = new THREE.BoxBufferGeometry(1, 1, 40)
@@ -12,7 +12,12 @@ const crossMaterial = new THREE.MeshBasicMaterial({ color: hotpink, fog: false }
 const position = new THREE.Vector3()
 const direction = new THREE.Vector3()
 
-export default function Ship () {
+export default function Ship(data) {
+  return <Drone data={data} />
+}
+
+const Drone = React.memo(({ data }) => {
+  const isPlayer = data.args[0]
   const gltf = useLoader(GLTFLoader, '/ship.gltf')
   const mutation = useStore(state => state.mutation)
   const { clock, mouse, ray } = mutation
@@ -25,13 +30,15 @@ export default function Ship () {
   const target = useRef()
 
   useFrame(() => {
-    main.current.rotation.z += (-mouse.x / 500 - main.current.rotation.z) * 0.1
-    main.current.rotation.x += (-mouse.y / 1200 - main.current.rotation.x) * 0.1
-    main.current.rotation.y += (-mouse.x / 1200 - main.current.rotation.y) * 0.1
-    main.current.position.x += (mouse.x / 10 - main.current.position.x) * 0.1
-    main.current.position.y += (25 + -mouse.y / 10 - main.current.position.y) * 0.1
-    exhaust.current.scale.x = 1 + Math.sin(clock.getElapsedTime() * 200)
-    exhaust.current.scale.y = 1 + Math.sin(clock.getElapsedTime() * 200)
+    if (isPlayer) {
+      main.current.rotation.z += (-mouse.x / 500 - main.current.rotation.z) * 0.1
+      main.current.rotation.x += (-mouse.y / 1200 - main.current.rotation.x) * 0.1
+      main.current.rotation.y += (-mouse.x / 1200 - main.current.rotation.y) * 0.1
+      main.current.position.x += (mouse.x / 10 - main.current.position.x) * 0.1
+      main.current.position.y += (25 + -mouse.y / 10 - main.current.position.y) * 0.1
+      exhaust.current.scale.x = 1 + Math.sin(clock.getElapsedTime() * 200)
+      exhaust.current.scale.y = 1 + Math.sin(clock.getElapsedTime() * 200)
+    }
     for (let i = 0; i < lasers.length; i++) {
       const group = laserGroup.current.children[i]
       group.position.z -= 10
@@ -43,6 +50,8 @@ export default function Ship () {
     main.current.getWorldDirection(direction)
     ray.origin.copy(position)
     ray.direction.copy(direction.negate())
+    mutation.position.copy(position)
+    mutation.direction.copy(direction)
 
     // ...
     crossMaterial.color = mutation.hits ? lightgreen : hotpink
@@ -53,34 +62,34 @@ export default function Ship () {
   return (
     <group ref={main}>
       <group scale={[3.5, 3.5, 3.5]}>
-        <group ref={cross} position={[0, 0, -300]} name="cross">
-          <mesh renderOrder={1000} material={crossMaterial}>
-            <boxBufferGeometry attach="geometry" args={[20, 2, 2]} />
+        <group name="cross" position={[0, 0, -300]} ref={cross}>
+          <mesh material={crossMaterial} renderOrder={1000}>
+            <boxBufferGeometry args={[20, 2, 2]} attach="geometry" />
           </mesh>
-          <mesh renderOrder={1000} material={crossMaterial}>
-            <boxBufferGeometry attach="geometry" args={[2, 20, 2]} />
-          </mesh>
-        </group>
-        <group ref={target} position={[0, 0, -300]} name="target">
-          <mesh position={[0, 20, 0]} renderOrder={1000} material={crossMaterial}>
-            <boxBufferGeometry attach="geometry" args={[40, 2, 2]} />
-          </mesh>
-          <mesh position={[0, -20, 0]} renderOrder={1000} material={crossMaterial}>
-            <boxBufferGeometry attach="geometry" args={[40, 2, 2]} />
-          </mesh>
-          <mesh position={[20, 0, 0]} renderOrder={1000} material={crossMaterial}>
-            <boxBufferGeometry attach="geometry" args={[2, 40, 2]} />
-          </mesh>
-          <mesh position={[-20, 0, 0]} renderOrder={1000} material={crossMaterial}>
-            <boxBufferGeometry attach="geometry" args={[2, 40, 2]} />
+          <mesh material={crossMaterial} renderOrder={1000}>
+            <boxBufferGeometry args={[2, 20, 2]} attach="geometry" />
           </mesh>
         </group>
-        <pointLight ref={laserLight} position={[0, 0, -20]} distance={100} intensity={0} color="lightgreen" />
+        <group name="target" position={[0, 0, -300]} ref={target}>
+          <mesh material={crossMaterial} position={[0, 20, 0]} renderOrder={1000}>
+            <boxBufferGeometry args={[40, 2, 2]} attach="geometry" />
+          </mesh>
+          <mesh material={crossMaterial} position={[0, -20, 0]} renderOrder={1000}>
+            <boxBufferGeometry args={[40, 2, 2]} attach="geometry" />
+          </mesh>
+          <mesh material={crossMaterial} position={[20, 0, 0]} renderOrder={1000}>
+            <boxBufferGeometry args={[2, 40, 2]} attach="geometry" />
+          </mesh>
+          <mesh material={crossMaterial} position={[-20, 0, 0]} renderOrder={1000}>
+            <boxBufferGeometry args={[2, 40, 2]} attach="geometry" />
+          </mesh>
+        </group>
+        <pointLight color="lightgreen" distance={100} intensity={0} position={[0, 0, -20]} ref={laserLight} />
         <group ref={laserGroup}>
           {lasers.map((t, i) => (
             <group key={i}>
-              <mesh position={[-2.8, 0, -0.8]} geometry={geometry} material={laserMaterial} />
-              <mesh position={[2.8, 0, -0.8]} geometry={geometry} material={laserMaterial} />
+              <mesh geometry={geometry} material={laserMaterial} position={[-2.8, 0, -0.8]} />
+              <mesh geometry={geometry} material={laserMaterial} position={[2.8, 0, -0.8]} />
             </group>
           ))}
         </group>
@@ -111,10 +120,10 @@ export default function Ship () {
           </mesh>
         </group>
       </group>
-      <mesh ref={exhaust} scale={[1, 1, 30]} position={[0, 1, 30]}>
-        <dodecahedronBufferGeometry attach="geometry" args={[1.5, 0]} />
+      <mesh position={[0, 1, 30]} ref={exhaust} scale={[1, 1, 30]}>
+        <dodecahedronBufferGeometry args={[1.5, 0]} attach="geometry" />
         <meshBasicMaterial attach="material" color="lightblue" />
       </mesh>
     </group>
   )
-}
+})

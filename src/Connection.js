@@ -1,8 +1,9 @@
 import React, { useRef, useEffect } from 'react'
 import useStore from './store'
 
-export default function Connection () {
+export default function Connection() {
   const socket = useStore(state => state.socket)
+  const mutation = useStore(state => state.mutation)
   let connected = false
 
   socket.on('connect', () => {
@@ -14,10 +15,17 @@ export default function Connection () {
     connected = false
   })
 
+  function update() {
+    socket.emit('player-state', {
+      position: mutation.position,
+      direction: mutation.direction
+    })
+  }
+
   useEffect(() => {
-    const i = setInterval(() => {}, 50)
+    const i = setInterval(update, 50)
     return () => clearInterval(i)
   }, [])
 
-  return (<></>)
+  return <></>
 }

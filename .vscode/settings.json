@@ -1,4 +1,16 @@
 {
-    "prettier.eslintIntegration": true,
-    "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "search.exclude": {
+    "**/__snapshots__": true,
+    "**/coverage": true,
+    "**/lib": true
+  },
+  "files.exclude": {
+    "**/.idea": true,
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/.DS_Store": true
+  },
+  "eslint.autoFixOnSave": true
 }

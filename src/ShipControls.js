@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-const ShipControls = function (object, mutation) {
+const ShipControls = function(object, mutation) {
   this.object = object
   const scope = this
   this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 }
@@ -9,7 +9,7 @@ const ShipControls = function (object, mutation) {
 
   this.mutation = mutation
 
-  this.update = function () {
+  this.update = function() {
     this.object.translateZ(-0.5)
 
     euler.setFromQuaternion(scope.object.quaternion)
@@ -33,7 +33,7 @@ const ShipControls = function (object, mutation) {
 
   const PI_2 = Math.PI / 2
 
-  function handleKeyDown (event) {
+  function handleKeyDown(event) {
     let needsUpdate = false
 
     switch (event.keyCode) {
@@ -67,8 +67,8 @@ const ShipControls = function (object, mutation) {
     }
   }
 
-  function map (x, inMin, inMax, outMin, outMax) {
-    return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin
+  function map(x, inMin, inMax, outMin, outMax) {
+    return ((x - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin
   }
 }
 

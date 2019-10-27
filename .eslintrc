@@ -1,15 +1,34 @@
 {
-  "extends": ["standard", "eslint:recommended", "plugin:react/recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:prettier/recommended",
+    "react-app"
+  ],
+  "plugins": ["sort-imports-es6-autofix"],
   "rules": {
+    "comma-dangle": "off",
     "dot-notation": "error",
     "no-unused-vars": [
       "error",
       { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }
     ],
     "no-var": "error",
+    "react/jsx-boolean-value": ["error", "never"],
+    "react/jsx-sort-props": ["error", { "ignoreCase": true }],
+    "react/no-unknown-property": "error",
+    "react/prop-types": "off",
+    "react/display-name": "off",
+    "react/sort-comp": "error",
     "prefer-const": "error",
     "prefer-spread": "error",
     "prefer-template": "error",
-    "sort-vars": "error"
+    "semi": [2, "never"],
+    "sort-imports-es6-autofix/sort-imports-es6": "error",
+    "sort-vars": "error",
+    "no-prototype-builtins": "off",
+    "template-curly-spacing": "off",
+    "indent": "off",
+    "no-empty": "off"
   }
 }

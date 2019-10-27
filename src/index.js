@@ -1,47 +1,47 @@
 import * as THREE from 'three'
-import ReactDOM from 'react-dom'
-import React, { useRef, Suspense } from 'react'
 import { Canvas, extend, useFrame, useThree } from 'react-three-fiber'
-import Stars from './3d/Stars'
-import Planets from './3d/Planets'
-import Effects from './3d/Effects'
-import Particles from './3d/Particles'
-import Rocks from './3d/Rocks'
-import Explosions from './3d/Explosions'
-import Ship from './3d/Ship'
-import Rig from './3d/Rig'
-import Hud from './Hud'
-import useStore from './store'
 import { ShipControls } from './ShipControls'
 import Connection from './Connection'
+import Effects from './3d/Effects'
+import Explosions from './3d/Explosions'
+import Hud from './Hud'
+import Particles from './3d/Particles'
+import Planets from './3d/Planets'
+import React, { Suspense, useRef } from 'react'
+import ReactDOM from 'react-dom'
+import Rig from './3d/Rig'
+import Rocks from './3d/Rocks'
+import Ship from './3d/Ship'
+import Stars from './3d/Stars'
+import useStore from './store'
 
 extend({ ShipControls })
 
-function Controls () {
+function Controls() {
   const controls = useRef()
   const { camera } = useThree()
   const mutation = useStore(state => state.mutation)
   useFrame(() => controls.current.update())
-  return <shipControls ref={controls} args={[camera, mutation]} />
+  return <shipControls args={[camera, mutation]} ref={controls} />
 }
 
-function App () {
+function App() {
   const { fov } = useStore(state => state.mutation)
   const actions = useStore(state => state.actions)
   return (
     <>
       <Canvas
-        onPointerMove={actions.updateMouse}
-        onClick={actions.shoot}
         camera={{ position: [0, 0, 2000], near: 0.01, far: 10000, fov }}
+        onClick={actions.shoot}
         onCreated={({ gl, camera }) => {
           actions.init(camera)
           gl.gammaInput = true
           gl.toneMapping = THREE.Uncharted2ToneMapping
           gl.setClearColor(new THREE.Color('#020207'))
         }}
+        onPointerMove={actions.updateMouse}
       >
-        <fog attach="fog" args={['black', 100, 700]} />
+        <fog args={['black', 100, 700]} attach="fog" />
         <ambientLight intensity={0.25} />
         <Stars />
         <Explosions />
@@ -52,7 +52,7 @@ function App () {
           <Rocks />
           <Planets />
           <Rig>
-            <Ship />
+            <Ship args={[true]} />
           </Rig>
         </Suspense>
         <Effects />
