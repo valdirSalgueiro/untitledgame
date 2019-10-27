@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useEffect } from 'react'
 import styled, { css, createGlobalStyle } from 'styled-components'
 import useStore from './store'
 
-export default function Hud() {
+export default function Hud () {
   const points = useStore(state => state.points)
   const health = useStore(state => state.health)
   const sound = useStore(state => state.sound)

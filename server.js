@@ -78,14 +78,6 @@ io.on('connection', function (socket) {
     clearInterval(fruitGameInterval)
   })
 
-  socket.on('admin-start-crazy-mode', () => {
-    io.emit('start-crazy-mode')
-  })
-
-  socket.on('admin-stop-crazy-mode', () => {
-    io.emit('stop-crazy-mode')
-  })
-
   socket.on('admin-clear-scores', () => {
     game.clearScores()
     io.emit('bootstrap', game)
@@ -102,7 +94,6 @@ server.listen(3000, function () {
 
 function createGame () {
   console.log('> Starting new game')
-  let fruitGameInterval
 
   const game = {
     canvasWidth: 35,
@@ -157,7 +148,7 @@ function createGame () {
     const fruitRandomX = Math.floor(Math.random() * game.canvasWidth)
     const fruitRandomY = Math.floor(Math.random() * game.canvasHeight)
 
-    for (fruitId in game.fruits) {
+    for (const fruitId in game.fruits) {
       const fruit = game.fruits[fruitId]
 
       if (fruit.x === fruitRandomX && fruit.y === fruitRandomY) {
@@ -182,10 +173,10 @@ function createGame () {
   }
 
   function checkForFruitColision () {
-    for (fruitId in game.fruits) {
+    for (const fruitId in game.fruits) {
       const fruit = game.fruits[fruitId]
 
-      for (socketId in game.players) {
+      for (const socketId in game.players) {
         const player = game.players[socketId]
 
         if (fruit.x === player.x && fruit.y === player.y) {
@@ -202,7 +193,7 @@ function createGame () {
   }
 
   function clearScores () {
-    for (socketId in game.players) {
+    for (const socketId in game.players) {
       game.players[socketId].score = 0
     }
   }

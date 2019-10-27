@@ -12,18 +12,8 @@ const [useStore, api] = create((set, get) => {
   const track = new THREE.TubeBufferGeometry(spline, 250, 0.2, 10, true)
   let cancelLaserTO
   let cancelExplosionTO
-  let connected = false
   const socket = io()
   const box = new THREE.Box3()
-
-  socket.on('connect', () => {
-    connected = true
-    console.log('> Connected to server')
-  })
-  socket.on('disconnect', () => {
-    console.log('> Disconnected')
-    connected = false
-  })
 
   return {
     // sound: true,
@@ -33,6 +23,7 @@ const [useStore, api] = create((set, get) => {
     health: 100,
     lasers: [],
     explosions: [],
+    socket,
     rocks: randomData(120, track, 150, 8, () => 1 + Math.random() * 2.5),
     enemies: randomData(10, track, 20, 15, 1),
 
@@ -76,30 +67,7 @@ const [useStore, api] = create((set, get) => {
         addEffect(() => {
           const { rocks, enemies } = get()
 
-          const time = Date.now()
-          const t = (mutation.t =
-            ((time - mutation.startTime) % mutation.looptime) /
-            mutation.looptime)
-          // mutation.position = track.parameters.path.getPointAt(t)
-          // {x: -0.596350670391772, y: -0.2628137962377919, z: -16.122467512141082}
-          // x: -8.945260055876581
-          // y: -3.9422069435668785
-          // z: -241.83701268211624
-          mutation.position = new THREE.Vector3({
-            x: -0.596350670391772,
-            y: -0.2628137962377919,
-            z: -16.122467512141082
-          })
-          mutation.position.multiplyScalar(mutation.scale)
-
-          // test for wormhole/warp
-          let warping = false
-          if (t > 0.3 && t < 0.4) {
-            if (!warping) {
-              warping = true
-              playAudio(audio.warp)
-            }
-          } else if (t > 0.5) warping = false
+          const time = Date.now()          
 
           // test for hits
           const r = rocks.filter(actions.test)

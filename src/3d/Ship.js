@@ -12,7 +12,7 @@ const crossMaterial = new THREE.MeshBasicMaterial({ color: hotpink, fog: false }
 const position = new THREE.Vector3()
 const direction = new THREE.Vector3()
 
-export default function Ship() {
+export default function Ship () {
   const gltf = useLoader(GLTFLoader, '/ship.gltf')
   const mutation = useStore(state => state.mutation)
   const { clock, mouse, ray } = mutation
