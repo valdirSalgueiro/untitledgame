@@ -136,6 +136,7 @@ function randomData(count, track, radius, size, scale) {
     const speed = 0.1 + Math.random()
     return {
       guid: guid++,
+      isPlayer: false,
       scale: typeof scale === 'function' ? scale() : scale,
       size,
       offset,

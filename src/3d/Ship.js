@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { useFrame, useLoader } from 'react-three-fiber'
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import useStore from '../store'
 
 const geometry = new THREE.BoxBufferGeometry(1, 1, 40)
@@ -17,7 +17,7 @@ export default function Ship(data) {
 }
 
 const Drone = React.memo(({ data }) => {
-  const isPlayer = data.args[0]
+  const isPlayer = data.data.isPlayer
   const gltf = useLoader(GLTFLoader, '/ship.gltf')
   const mutation = useStore(state => state.mutation)
   const { clock, mouse, ray } = mutation
@@ -29,6 +29,12 @@ const Drone = React.memo(({ data }) => {
   const cross = useRef()
   const target = useRef()
 
+  useEffect(() => {
+    if (!isPlayer) {
+      main.current.position.copy(data.data.offset)
+    }
+  }, [])
+
   useFrame(() => {
     if (isPlayer) {
       main.current.rotation.z += (-mouse.x / 500 - main.current.rotation.z) * 0.1
@@ -36,8 +42,20 @@ const Drone = React.memo(({ data }) => {
       main.current.rotation.y += (-mouse.x / 1200 - main.current.rotation.y) * 0.1
       main.current.position.x += (mouse.x / 10 - main.current.position.x) * 0.1
       main.current.position.y += (25 + -mouse.y / 10 - main.current.position.y) * 0.1
+
+      // Get ships orientation and save it to the stores ray
+      main.current.getWorldPosition(position)
+      main.current.getWorldDirection(direction)
+      ray.origin.copy(position)
+      ray.direction.copy(direction.negate())
+      mutation.position.copy(position)
+      mutation.direction.copy(direction)
+
       exhaust.current.scale.x = 1 + Math.sin(clock.getElapsedTime() * 200)
       exhaust.current.scale.y = 1 + Math.sin(clock.getElapsedTime() * 200)
+      crossMaterial.color = mutation.hits ? lightgreen : hotpink
+      cross.current.visible = !mutation.hits
+      target.current.visible = !!mutation.hits
     }
     for (let i = 0; i < lasers.length; i++) {
       const group = laserGroup.current.children[i]
@@ -45,18 +63,7 @@ const Drone = React.memo(({ data }) => {
     }
     laserLight.current.intensity += ((lasers.length && Date.now() - lasers[lasers.length - 1] < 100 ? 20 : 0) - laserLight.current.intensity) * 0.3
 
-    // Get ships orientation and save it to the stores ray
-    main.current.getWorldPosition(position)
-    main.current.getWorldDirection(direction)
-    ray.origin.copy(position)
-    ray.direction.copy(direction.negate())
-    mutation.position.copy(position)
-    mutation.direction.copy(direction)
-
     // ...
-    crossMaterial.color = mutation.hits ? lightgreen : hotpink
-    cross.current.visible = !mutation.hits
-    target.current.visible = !!mutation.hits
   })
 
   return (

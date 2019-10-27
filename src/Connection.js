@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import useStore from './store'
 
 export default function Connection() {
@@ -25,7 +25,7 @@ export default function Connection() {
   useEffect(() => {
     const i = setInterval(update, 50)
     return () => clearInterval(i)
-  }, [])
+  })
 
   return <></>
 }

@@ -3,6 +3,7 @@ import { Canvas, extend, useFrame, useThree } from 'react-three-fiber'
 import { ShipControls } from './ShipControls'
 import Connection from './Connection'
 import Effects from './3d/Effects'
+import Enemies from './3d/Enemies'
 import Explosions from './3d/Explosions'
 import Hud from './Hud'
 import Particles from './3d/Particles'
@@ -51,8 +52,9 @@ function App() {
         <Suspense fallback={null}>
           <Rocks />
           <Planets />
+          <Enemies />
           <Rig>
-            <Ship args={[true]} />
+            <Ship data={{ isPlayer: true }} />
           </Rig>
         </Suspense>
         <Effects />

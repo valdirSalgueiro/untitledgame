@@ -1,18 +1,10 @@
 {
-  "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:prettier/recommended",
-    "react-app"
-  ],
+  "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:prettier/recommended", "react-app"],
   "plugins": ["sort-imports-es6-autofix"],
   "rules": {
     "comma-dangle": "off",
     "dot-notation": "error",
-    "no-unused-vars": [
-      "error",
-      { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }
-    ],
+    "no-unused-vars": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }],
     "no-var": "error",
     "react/jsx-boolean-value": ["error", "never"],
     "react/jsx-sort-props": ["error", { "ignoreCase": true }],
