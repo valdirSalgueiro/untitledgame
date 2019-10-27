@@ -25,7 +25,8 @@ const [useStore, api] = create((set, get) => {
     explosions: [],
     socket,
     rocks: randomData(120, track, 150, 8, () => 1 + Math.random() * 2.5),
-    enemies: randomData(10, track, 20, 15, 1),
+    //enemies: randomData(10, track, 20, 15, 1),
+    enemies: [],
 
     mutation: {
       t: 0,
@@ -66,8 +67,9 @@ const [useStore, api] = create((set, get) => {
 
           // test for hits
           const r = rocks.filter(actions.test)
-          const e = enemies.filter(actions.test)
-          const a = r.concat(e)
+          //const e = enemies.filter(actions.test)
+          //const a = r.concat(e)
+          const a = r
           const previous = mutation.hits
           mutation.hits = a.length
           if (previous === 0 && mutation.hits) playAudio(audio.click)
@@ -84,9 +86,9 @@ const [useStore, api] = create((set, get) => {
               1000
             )
             set(state => ({
-              points: state.points + r.length * 100 + e.length * 200,
-              rocks: state.rocks.filter(rock => !r.find(r => r.guid === rock.guid)),
-              enemies: state.enemies.filter(enemy => !e.find(e => e.guid === enemy.guid))
+              //points: state.points + r.length * 100 + e.length * 200,
+              rocks: state.rocks.filter(rock => !r.find(r => r.guid === rock.guid))
+              //enemies: state.enemies.filter(enemy => !e.find(e => e.guid === enemy.guid))
             }))
           }
           // if (a.some(data => data.distance < 15)) set(state => ({ health: state.health - 1 }))
@@ -103,6 +105,12 @@ const [useStore, api] = create((set, get) => {
           1000
         )
         playAudio(audio.zap, 0.5)
+      },
+      addPlayer(id) {
+        set(state => ({ enemies: [...state.enemies, { guid: id, hit: new THREE.Vector3(), position: new THREE.Vector3(), direction: new THREE.Vector3() }] }))
+      },
+      updatePlayer(data) {
+        set(state => ({ enemies: updateEnemies(state.enemies, data) }))
       },
       toggleSound(sound = !get().sound) {
         set({ sound })
@@ -126,6 +134,20 @@ const [useStore, api] = create((set, get) => {
     }
   }
 })
+
+function updateEnemies(enemies, data) {
+  console.log('updating properties')
+  return enemies.map(item => {
+    if (item.guid !== data.guid) {
+      return item
+    }
+
+    return {
+      ...item,
+      ...{ position: data.direction }
+    }
+  })
+}
 
 function randomData(count, track, radius, size, scale) {
   return new Array(count).fill().map(() => {

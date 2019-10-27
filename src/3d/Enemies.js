@@ -13,7 +13,7 @@ export default function Enemies() {
   return enemies.map((data, i) => <Drone data={data} key={i} />)
 }
 
-const Drone = React.memo(({ data }) => {
+const Drone = data => {
   const { clock } = useStore(state => state.mutation)
   const lasers = useStore(state => state.lasers)
   const laserGroup = useRef()
@@ -23,8 +23,12 @@ const Drone = React.memo(({ data }) => {
   const ref = useRef()
 
   useEffect(() => {
-    ref.current.position.copy(data.offset)
-  }, [data.offset])
+    console.log('updateEnemy')
+    console.log(data.data.position)
+    console.log(data.data.direction)
+    ref.current.position.copy(data.data.position)
+    ref.current.lookAt(data.data.direction)
+  }, [data.data.direction, data.data.position])
 
   useFrame(() => {
     ref.current.translateZ(-0.5)
@@ -77,4 +81,4 @@ const Drone = React.memo(({ data }) => {
       </mesh>
     </group>
   )
-})
+}

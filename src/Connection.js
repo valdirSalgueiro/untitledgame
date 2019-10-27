@@ -4,19 +4,30 @@ import useStore from './store'
 export default function Connection() {
   const socket = useStore(state => state.socket)
   const mutation = useStore(state => state.mutation)
-  let connected = false
+  const actions = useStore(state => state.actions)
+
+  console.log('connection')
 
   socket.on('connect', () => {
-    connected = true
     console.log('> Connected to server')
   })
+
+  socket.on('player-add', data => {
+    console.log('add player')
+    console.log(data)
+    actions.addPlayer(data)
+  })
+
+  socket.on('player-update', data => {
+    actions.updatePlayer(data)
+  })
+
   socket.on('disconnect', () => {
     console.log('> Disconnected')
-    connected = false
   })
 
   function update() {
-    socket.emit('player-state', {
+    socket.emit('player-update', {
       position: mutation.position,
       direction: mutation.direction
     })
