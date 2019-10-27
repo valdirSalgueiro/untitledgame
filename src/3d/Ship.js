@@ -25,8 +25,7 @@ export default function Ship() {
   const target = useRef()
 
   useFrame(() => {
-    main.current.position.z = Math.sin(clock.getElapsedTime() * 40) * Math.PI * 0.1
-    main.current.rotation.z += (mouse.x / 500 - main.current.rotation.z) * 0.1
+    main.current.rotation.z += (-mouse.x / 500 - main.current.rotation.z) * 0.1
     main.current.rotation.x += (-mouse.y / 1200 - main.current.rotation.x) * 0.1
     main.current.rotation.y += (-mouse.x / 1200 - main.current.rotation.y) * 0.1
     main.current.position.x += (mouse.x / 10 - main.current.position.x) * 0.1
@@ -35,7 +34,7 @@ export default function Ship() {
     exhaust.current.scale.y = 1 + Math.sin(clock.getElapsedTime() * 200)
     for (let i = 0; i < lasers.length; i++) {
       const group = laserGroup.current.children[i]
-      group.position.z -= 20
+      group.position.z -= 10
     }
     laserLight.current.intensity += ((lasers.length && Date.now() - lasers[lasers.length - 1] < 100 ? 20 : 0) - laserLight.current.intensity) * 0.3
 

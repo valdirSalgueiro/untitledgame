@@ -2,19 +2,32 @@ import * as THREE from 'three'
 import { Curves } from 'three/examples/jsm/curves/CurveExtras'
 import { addEffect } from 'react-three-fiber'
 import create from 'zustand'
+import io from 'socket.io-client'
 import * as audio from './audio'
 
 let guid = 1
 
 const [useStore, api] = create((set, get) => {
-  let spline = new Curves.GrannyKnot()
-  let track = new THREE.TubeBufferGeometry(spline, 250, 0.2, 10, true)
-  let cancelLaserTO = undefined
-  let cancelExplosionTO = undefined
+  const spline = new Curves.GrannyKnot()
+  const track = new THREE.TubeBufferGeometry(spline, 250, 0.2, 10, true)
+  let cancelLaserTO
+  let cancelExplosionTO
+  let connected = false
+  const socket = io()
   const box = new THREE.Box3()
 
+  socket.on('connect', () => {
+    connected = true
+    console.log('> Connected to server')
+  })
+  socket.on('disconnect', () => {
+    console.log('> Disconnected')
+    connected = false
+  })
+
   return {
-    sound: true,
+    // sound: true,
+    sound: false,
     camera: undefined,
     points: 0,
     health: 100,
@@ -29,16 +42,22 @@ const [useStore, api] = create((set, get) => {
       startTime: Date.now(),
 
       track,
-      scale: 15,
+      scale: 1,
       fov: 70,
       hits: false,
-      rings: randomRings(30, track),
-      particles: randomData(3000, track, 100, 1, () => 0.5 + Math.random() * 0.5),
+      particles: randomData(
+        3000,
+        track,
+        100,
+        1,
+        () => 0.5 + Math.random() * 0.5
+      ),
       looptime: 40 * 1000,
       binormal: new THREE.Vector3(),
       normal: new THREE.Vector3(),
       clock: new THREE.Clock(false),
       mouse: new THREE.Vector2(-250, 50),
+      mouseRelative: new THREE.Vector2(0, 0),
 
       // Re-usable objects
       dummy: new THREE.Object3D(),
@@ -47,7 +66,7 @@ const [useStore, api] = create((set, get) => {
     },
 
     actions: {
-      init(camera) {
+      init (camera) {
         const { mutation, actions } = get()
 
         set({ camera })
@@ -58,8 +77,19 @@ const [useStore, api] = create((set, get) => {
           const { rocks, enemies } = get()
 
           const time = Date.now()
-          const t = (mutation.t = ((time - mutation.startTime) % mutation.looptime) / mutation.looptime)
-          mutation.position = track.parameters.path.getPointAt(t)
+          const t = (mutation.t =
+            ((time - mutation.startTime) % mutation.looptime) /
+            mutation.looptime)
+          // mutation.position = track.parameters.path.getPointAt(t)
+          // {x: -0.596350670391772, y: -0.2628137962377919, z: -16.122467512141082}
+          // x: -8.945260055876581
+          // y: -3.9422069435668785
+          // z: -241.83701268211624
+          mutation.position = new THREE.Vector3({
+            x: -0.596350670391772,
+            y: -0.2628137962377919,
+            z: -16.122467512141082
+          })
           mutation.position.multiplyScalar(mutation.scale)
 
           // test for wormhole/warp
@@ -79,36 +109,65 @@ const [useStore, api] = create((set, get) => {
           mutation.hits = a.length
           if (previous === 0 && mutation.hits) playAudio(audio.click)
           const lasers = get().lasers
-          if (mutation.hits && lasers.length && time - lasers[lasers.length - 1] < 100) {
+          if (
+            mutation.hits &&
+            lasers.length &&
+            time - lasers[lasers.length - 1] < 100
+          ) {
             const updates = a.map(data => ({ time: Date.now(), ...data }))
             set(state => ({ explosions: [...state.explosions, ...updates] }))
             clearTimeout(cancelExplosionTO)
-            cancelExplosionTO = setTimeout(() => set(state => ({ explosions: state.explosions.filter(({ time }) => Date.now() - time <= 1000) })), 1000)
+            cancelExplosionTO = setTimeout(
+              () =>
+                set(state => ({
+                  explosions: state.explosions.filter(
+                    ({ time }) => Date.now() - time <= 1000
+                  )
+                })),
+              1000
+            )
             set(state => ({
               points: state.points + r.length * 100 + e.length * 200,
-              rocks: state.rocks.filter(rock => !r.find(r => r.guid === rock.guid)),
-              enemies: state.enemies.filter(enemy => !e.find(e => e.guid === enemy.guid))
+              rocks: state.rocks.filter(
+                rock => !r.find(r => r.guid === rock.guid)
+              ),
+              enemies: state.enemies.filter(
+                enemy => !e.find(e => e.guid === enemy.guid)
+              )
             }))
           }
-          //if (a.some(data => data.distance < 15)) set(state => ({ health: state.health - 1 }))
+          // if (a.some(data => data.distance < 15)) set(state => ({ health: state.health - 1 }))
         })
       },
-      shoot() {
+      shoot () {
         set(state => ({ lasers: [...state.lasers, Date.now()] }))
         clearTimeout(cancelLaserTO)
-        cancelLaserTO = setTimeout(() => set(state => ({ lasers: state.lasers.filter(t => Date.now() - t <= 1000) })), 1000)
+        cancelLaserTO = setTimeout(
+          () =>
+            set(state => ({
+              lasers: state.lasers.filter(t => Date.now() - t <= 1000)
+            })),
+          1000
+        )
         playAudio(audio.zap, 0.5)
       },
-      toggleSound(sound = !get().sound) {
+      toggleSound (sound = !get().sound) {
         set({ sound })
         playAudio(audio.engine, 1, true)
         playAudio(audio.engine2, 0.3, true)
         playAudio(audio.bg, 1, true)
       },
-      updateMouse({ clientX: x, clientY: y }) {
-        get().mutation.mouse.set(x - window.innerWidth / 2, y - window.innerHeight / 2)
+      updateMouse ({ clientX: x, clientY: y }) {
+        get().mutation.mouse.set(
+          x - window.innerWidth / 2,
+          y - window.innerHeight / 2
+        )
+        get().mutation.mouseRelative.set(
+          -0.5 + x / window.innerWidth,
+          -0.5 + y / window.innerHeight
+        )
       },
-      test(data) {
+      test (data) {
         box.min.copy(data.offset)
         box.max.copy(data.offset)
         box.expandByScalar(data.size * data.scale)
@@ -121,37 +180,37 @@ const [useStore, api] = create((set, get) => {
   }
 })
 
-function randomData(count, track, radius, size, scale) {
+function randomData (count, track, radius, size, scale) {
   return new Array(count).fill().map(() => {
     const t = Math.random()
     const pos = track.parameters.path.getPointAt(t)
     pos.multiplyScalar(15)
     const offset = pos
       .clone()
-      .add(new THREE.Vector3(-radius + Math.random() * radius * 2, -radius + Math.random() * radius * 2, -radius + Math.random() * radius * 2))
+      .add(
+        new THREE.Vector3(
+          -radius + Math.random() * radius * 2,
+          -radius + Math.random() * radius * 2,
+          -radius + Math.random() * radius * 2
+        )
+      )
     const speed = 0.1 + Math.random()
-    return { guid: guid++, scale: typeof scale === 'function' ? scale() : scale, size, offset, pos, speed, radius, t, hit: new THREE.Vector3(), distance: 1000 }
+    return {
+      guid: guid++,
+      scale: typeof scale === 'function' ? scale() : scale,
+      size,
+      offset,
+      pos,
+      speed,
+      radius,
+      t,
+      hit: new THREE.Vector3(),
+      distance: 1000
+    }
   })
 }
 
-function randomRings(count, track) {
-  let temp = []
-  let t = 0.4
-  for (let i = 0; i < count; i++) {
-    t += 0.003
-    const pos = track.parameters.path.getPointAt(t)
-    pos.multiplyScalar(15)
-    const segments = track.tangents.length
-    const pickt = t * segments
-    const pick = Math.floor(pickt)
-    const lookAt = track.parameters.path.getPointAt((t + 1 / track.parameters.path.getLength()) % 1).multiplyScalar(15)
-    const matrix = new THREE.Matrix4().lookAt(pos, lookAt, track.binormals[pick])
-    temp.push([pos.toArray(), matrix])
-  }
-  return temp
-}
-
-function playAudio(audio, volume = 1, loop = false) {
+function playAudio (audio, volume = 1, loop = false) {
   if (api.getState().sound) {
     audio.currentTime = 0
     audio.volume = volume

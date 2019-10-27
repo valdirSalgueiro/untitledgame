@@ -1,0 +1,15 @@
+{
+  "extends": ["standard"],
+  "rules": {
+    "dot-notation": "error",
+    "no-unused-vars": [
+      "error",
+      { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }
+    ],
+    "no-var": "error",
+    "prefer-const": "error",
+    "prefer-spread": "error",
+    "prefer-template": "error",
+    "sort-vars": "error"
+  }
+}
