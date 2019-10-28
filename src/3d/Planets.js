@@ -1,6 +1,6 @@
 import * as THREE from 'three'
-import React, { useRef } from 'react'
 import { useLoader } from 'react-three-fiber'
+import React, { useRef } from 'react'
 import earthImg from '../images/earth.jpg'
 import moonImg from '../images/moon.png'
 
@@ -8,20 +8,20 @@ export default function Planets() {
   const ref = useRef()
   const [texture, moon] = useLoader(THREE.TextureLoader, [earthImg, moonImg])
   return (
-    <group ref={ref} scale={[100, 100, 100]} position={[-500, -500, 1000]}>
+    <group position={[-500, -500, 1000]} ref={ref} scale={[100, 100, 100]}>
       <mesh>
-        <sphereBufferGeometry attach="geometry" args={[5, 32, 32]} />
-        <meshStandardMaterial attach="material" map={texture} roughness={1} fog={false} />
+        <sphereBufferGeometry args={[5, 32, 32]} attach="geometry" />
+        <meshStandardMaterial attach="material" fog={false} map={texture} roughness={1} />
       </mesh>
       <mesh position={[5, -5, -5]}>
-        <sphereBufferGeometry attach="geometry" args={[0.75, 32, 32]} />
-        <meshStandardMaterial attach="material" roughness={1} map={moon} fog={false} />
+        <sphereBufferGeometry args={[0.75, 32, 32]} attach="geometry" />
+        <meshStandardMaterial attach="material" fog={false} map={moon} roughness={1} />
       </mesh>
-      <pointLight position={[-5, -5, -5]} distance={1000} intensity={6} />
+      <pointLight distance={1000} intensity={6} position={[-5, -5, -5]} />
       <mesh position={[-30, -10, -60]}>
-        <sphereBufferGeometry attach="geometry" args={[4, 32, 32]} />
+        <sphereBufferGeometry args={[4, 32, 32]} attach="geometry" />
         <meshBasicMaterial attach="material" color="#FFFF99" fog={false} />
-        <pointLight distance={6100} intensity={50} color="white" />
+        <pointLight color="white" distance={6100} intensity={50} />
       </mesh>
     </group>
   )

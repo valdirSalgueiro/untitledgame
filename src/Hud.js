@@ -1,8 +1,8 @@
-import React, { useMemo, useRef, useEffect } from 'react'
-import styled, { css, createGlobalStyle } from 'styled-components'
+import React, { useEffect, useMemo, useRef } from 'react'
+import styled, { createGlobalStyle, css } from 'styled-components'
 import useStore from './store'
 
-export default function Hud () {
+export default function Hud() {
   const points = useStore(state => state.points)
   const health = useStore(state => state.health)
   const sound = useStore(state => state.sound)
@@ -15,7 +15,7 @@ export default function Hud () {
     return () => clearInterval(i)
   }, [])
 
-  const score = useMemo(() => (points >= 1000 ? (points / 1000).toFixed(1) + 'K' : points), [points])
+  const score = useMemo(() => (points >= 1000 ? `${(points / 1000).toFixed(1)}K` : points), [points])
   return (
     <>
       <UpperLeft onClick={() => toggle()}>
@@ -36,7 +36,7 @@ export default function Hud () {
       </LowerLeft>
       <Global />
       <LowerRight>
-        <div style={{ width: health + '%' }} />
+        <div style={{ width: `${health}%` }} />
       </LowerRight>
     </>
   )

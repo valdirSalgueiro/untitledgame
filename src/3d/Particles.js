@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import useStore from '../store'
 
 export default function Particles() {
@@ -15,11 +15,11 @@ export default function Particles() {
       instancedMesh.current.setMatrixAt(i, dummy.matrix)
     })
     instancedMesh.current.instanceMatrix.needsUpdate = true
-  }, [])
+  }, [dummy, particles])
 
   return (
-    <instancedMesh ref={instancedMesh} args={[null, null, particles.length]} frustumCulled={false}>
-      <coneBufferGeometry attach="geometry" args={[2, 2, 3]} />
+    <instancedMesh args={[null, null, particles.length]} frustumCulled={false} ref={instancedMesh}>
+      <coneBufferGeometry args={[2, 2, 3]} attach="geometry" />
       <meshStandardMaterial attach="material" color="#606060" />
     </instancedMesh>
   )

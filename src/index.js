@@ -42,8 +42,6 @@ function App() {
       >
         <fog args={['black', 100, 700]} attach="fog" />
         <ambientLight intensity={0.25} />
-        <Explosions />
-        <Particles />
         <Controls />
         <Connection />
         <Suspense fallback={null}>

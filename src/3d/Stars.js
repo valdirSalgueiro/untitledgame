@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 
 export default function Stars({ count = 3000 }) {
   const positions = useMemo(() => {
-    let positions = []
+    const positions = []
     for (let i = 0; i < count; i++) {
       const r = 4000
       const theta = 2 * Math.PI * Math.random()
@@ -19,9 +19,9 @@ export default function Stars({ count = 3000 }) {
   return (
     <points>
       <bufferGeometry attach="geometry">
-        <bufferAttribute attachObject={['attributes', 'position']} count={positions.length / 3} array={positions} itemSize={3} />
+        <bufferAttribute array={positions} attachObject={['attributes', 'position']} count={positions.length / 3} itemSize={3} />
       </bufferGeometry>
-      <pointsMaterial attach="material" size={12.5} sizeAttenuation color="white" fog={false} />
+      <pointsMaterial attach="material" color="white" fog={false} size={12.5} sizeAttenuation />
     </points>
   )
 }

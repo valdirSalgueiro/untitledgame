@@ -16,10 +16,8 @@ export default function Ship() {
   const { camera } = useThree()
   const gltf = useLoader(GLTFLoader, '/ship.gltf')
   const mutation = useStore(state => state.mutation)
-  const actions = useStore(state => state.actions)
   const { clock, mouse, ray } = mutation
   const lasers = useStore(state => state.lasers)
-  const enemies = useStore(state => state.enemies)
   const main = useRef()
   const laserGroup = useRef()
   const laserLight = useRef()
