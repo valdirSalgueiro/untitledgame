@@ -13,7 +13,7 @@ export default function Enemies() {
   return enemies.map((data, i) => <Drone {...data} key={i} />)
 }
 
-const Drone = enemyState => {
+function Drone({ position, rotation, matrixWorld }) {
   const { clock } = useStore(state => state.mutation)
   const lasers = useStore(state => state.lasers)
   const laserGroup = useRef()
@@ -21,11 +21,16 @@ const Drone = enemyState => {
   const exhaust = useRef()
   const laserLight = useRef()
   const ref = useRef()
+  const group = useRef()
 
   useEffect(() => {
-    ref.current.position.copy(enemyState.position)
-    ref.current.rotation.copy(enemyState.rotation)
-  }, [enemyState.position, enemyState.rotation])
+    console.log('useEffect')
+    console.log(matrixWorld)
+    console.log(ref.current)
+    ref.current.position.copy(position)
+    ref.current.matrixWorld.copy(matrixWorld)
+    ref.current.updateMatrixWorld()
+  }, [matrixWorld, position])
 
   useFrame(() => {
     // ref.current.translateZ(-0.5)

@@ -16,11 +16,13 @@ export default function Connection() {
     console.log('> bootstrap')
     console.log(players)
     for (const key of Object.keys(players)) {
-      actions.addPlayer(players[key])
+      actions.addPlayer(key)
     }
   })
 
   socket.on('player-add', data => {
+    console.log('player-add')
+    console.log(data)
     actions.addPlayer(data)
   })
 
@@ -39,7 +41,7 @@ export default function Connection() {
   function update() {
     socket.emit('player-update', {
       position: mutation.position,
-      quaternion: mutation.quaternion,
+      matrixWorld: mutation.matrixWorld,
       rotation: mutation.rotation
     })
   }

@@ -31,7 +31,7 @@ const [useStore, api] = create((set, get) => {
     mutation: {
       t: 0,
       position: new THREE.Vector3(),
-      quaternion: new THREE.Quaternion(),
+      matrixWorld: new THREE.Matrix4(),
       rotation: new THREE.Euler(0, 0, 0, 'YXZ'),
       startTime: Date.now(),
 
@@ -113,7 +113,7 @@ const [useStore, api] = create((set, get) => {
         set(state => ({
           enemies: [
             ...state.enemies,
-            { guid: id, hit: new THREE.Vector3(), position: new THREE.Vector3(), quaternion: new THREE.Quaternion(), rotation: new THREE.Euler(0, 0, 0, 'YXZ') }
+            { guid: id, hit: new THREE.Vector3(), position: new THREE.Vector3(), matrixWorld: new THREE.Matrix4(), rotation: new THREE.Euler(0, 0, 0, 'YXZ') }
           ]
         }))
       },
@@ -151,14 +151,16 @@ const [useStore, api] = create((set, get) => {
 })
 
 function updateEnemies(enemies, data) {
+  //console.log(`looking for player ${data.guid}`)
   return enemies.map(item => {
     if (item.guid !== data.guid) {
       return item
     }
+    //console.log(`updating player ${data.guid}`)
 
     return {
       ...item,
-      ...{ position: data.position, quaternion: data.quaternion, rotation: data.rotation }
+      ...{ position: data.position, matrixWorld: data.matrixWorld, rotation: data.rotation }
     }
   })
 }

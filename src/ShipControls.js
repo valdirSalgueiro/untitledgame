@@ -12,7 +12,7 @@ const ShipControls = function(object, mutation) {
 
   this.update = function() {
     if (!scope.locked) {
-      this.object.translateZ(-0.5)
+      this.object.translateZ(-1.0)
       euler.setFromQuaternion(scope.object.quaternion)
 
       euler.y += map(scope.mutation.mouseRelative.x, -0.5, 0.5, 0.03, -0.03)

@@ -1,6 +1,6 @@
 import * as THREE from 'three'
-import React, { useRef, useMemo, useEffect } from 'react'
 import { useFrame } from 'react-three-fiber'
+import React, { useEffect, useMemo, useRef } from 'react'
 import useStore, { audio, playAudio } from '../store'
 
 function make(color, speed) {
@@ -9,10 +9,7 @@ function make(color, speed) {
     color,
     data: new Array(20)
       .fill()
-      .map(() => [
-        new THREE.Vector3(),
-        new THREE.Vector3(-1 + Math.random() * 2, -1 + Math.random() * 2, -1 + Math.random() * 2).normalize().multiplyScalar(speed * 0.75)
-      ])
+      .map(() => [new THREE.Vector3(), new THREE.Vector3(-1 + Math.random() * 2, -1 + Math.random() * 2, -1 + Math.random() * 2).normalize().multiplyScalar(speed * 0.75)])
   }
 }
 
@@ -43,11 +40,11 @@ function Explosion({ position, scale }) {
   })
 
   return (
-    <group ref={group} position={position} scale={[scale, scale, scale]}>
+    <group position={position} ref={group} scale={[scale, scale, scale]}>
       {particles.map(({ color, data }, index) => (
-        <instancedMesh key={index} args={[null, null, data.length]} frustumCulled={false}>
-          <dodecahedronBufferGeometry attach="geometry" args={[10, 0]} />
-          <meshBasicMaterial attach="material" color={color} transparent opacity={1} fog={false} />
+        <instancedMesh args={[null, null, data.length]} frustumCulled={false} key={index}>
+          <dodecahedronBufferGeometry args={[10, 0]} attach="geometry" />
+          <meshBasicMaterial attach="material" color={color} fog={false} opacity={1} transparent />
         </instancedMesh>
       ))}
     </group>

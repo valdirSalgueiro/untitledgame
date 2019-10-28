@@ -11,6 +11,7 @@ const laserMaterial = new THREE.MeshBasicMaterial({ color: lightgreen })
 const crossMaterial = new THREE.MeshBasicMaterial({ color: hotpink, fog: false })
 const position = new THREE.Vector3()
 const direction = new THREE.Vector3()
+const quaternion = new THREE.Quaternion()
 
 export default function Ship() {
   const gltf = useLoader(GLTFLoader, '/ship.gltf')
@@ -23,6 +24,7 @@ export default function Ship() {
   const exhaust = useRef()
   const cross = useRef()
   const target = useRef()
+  const mesh = useRef()
 
   useFrame(() => {
     main.current.rotation.z += (-mouse.x / 500 - main.current.rotation.z) * 0.1
@@ -42,11 +44,11 @@ export default function Ship() {
     // Get ships orientation and save it to the stores ray
     main.current.getWorldPosition(position)
     main.current.getWorldDirection(direction)
+    main.current.getWorldQuaternion(quaternion)
     ray.origin.copy(position)
     ray.direction.copy(direction.negate())
+    mutation.matrixWorld.copy(main.current.matrixWorld)
     mutation.position.copy(position)
-    mutation.quaternion.copy(main.current.quaternion)
-    mutation.rotation.copy(main.current.rotation)
 
     // ...
     crossMaterial.color = mutation.hits ? lightgreen : hotpink
@@ -88,7 +90,7 @@ export default function Ship() {
             </group>
           ))}
         </group>
-        <group rotation={[Math.PI / 2, Math.PI, 0]}>
+        <group ref={mesh} rotation={[Math.PI / 2, Math.PI, 0]}>
           <mesh name="Renault_(S,_T1)_0">
             <bufferGeometry attach="geometry" {...gltf.__$[5].geometry} />
             <meshStandardMaterial attach="material" color="#070707" />

@@ -19,7 +19,7 @@ io.on('connection', function(socket) {
   socket.broadcast.emit('player-add', socket.id)
 
   socket.on('player-update', data => {
-    game.addPlayer(socket.id, data)
+    game.updatePlayer(socket.id, data)
 
     socket.broadcast.emit('player-update', { ...data, guid: socket.id })
   })
@@ -38,11 +38,11 @@ server.listen(3000, function() {
 function createGame() {
   const game = {
     players: {},
-    addPlayer,
+    updatePlayer,
     removePlayer
   }
 
-  function addPlayer(socketId, data) {
+  function updatePlayer(socketId, data) {
     return (game.players[socketId] = data)
   }
 
