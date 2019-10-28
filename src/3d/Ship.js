@@ -53,11 +53,10 @@ export default function Ship() {
     group.current.position.copy(mutation.player.position)
     group.current.quaternion.copy(mutation.player.quaternion)
 
-    //if (enemies.length === 0) {
     camera.position.copy(mutation.player.position)
     camera.rotation.copy(mutation.player.rotation)
-    //}
-    actions.updateShip(main.current.rotation, main.current.position)
+    mutation.shipPosition.copy(main.current.position)
+    mutation.shipRotation.copy(main.current.rotation)
 
     // ...
     crossMaterial.color = mutation.hits ? lightgreen : hotpink

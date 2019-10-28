@@ -27,9 +27,9 @@ function Drone(data) {
     if (data.position) {
       group.current.position.copy(data.position)
       group.current.rotation.copy(data.rotation)
-      //main.current.position.copy(data.shipPosition)
-      //main.current.rotation.copy(data.shipRotation)
-      group.current.updateMatrix()
+      main.current.position.copy(data.shipPosition)
+      main.current.rotation.copy(data.shipRotation)
+      //group.current.updateMatrix()
       //main.current.updateMatrix()
     }
   }, [data])

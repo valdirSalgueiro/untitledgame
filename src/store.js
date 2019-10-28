@@ -31,7 +31,7 @@ const [useStore, api] = create((set, get) => {
     mutation: {
       t: 0,
       player: new THREE.Object3D(),
-      shipRotation: new THREE.Euler(0, 0, 0, 'XYZ'),
+      shipRotation: new THREE.Euler(0, 0, 0, 'YXZ'),
       shipPosition: new THREE.Vector3(),
       startTime: Date.now(),
 
@@ -129,10 +129,6 @@ const [useStore, api] = create((set, get) => {
         playAudio(audio.engine, 1, true)
         playAudio(audio.engine2, 0.3, true)
         playAudio(audio.bg, 1, true)
-      },
-      updateShip(rotation, position) {
-        get().mutation.shipRotation.set(rotation)
-        get().mutation.shipPosition.set(position)
       },
       updateMouse({ clientX: x, clientY: y }) {
         get().mutation.mouse.set(x - window.innerWidth / 2, y - window.innerHeight / 2)
