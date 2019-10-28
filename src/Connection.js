@@ -12,10 +12,20 @@ export default function Connection() {
     console.log('> Connected to server')
   })
 
+  socket.on('bootstrap', players => {
+    console.log('> bootstrap')
+    console.log(players)
+    for (const key of Object.keys(players)) {
+      actions.addPlayer(players[key])
+    }
+  })
+
   socket.on('player-add', data => {
-    console.log('add player')
-    console.log(data)
     actions.addPlayer(data)
+  })
+
+  socket.on('player-remove', data => {
+    actions.removePlayer(data)
   })
 
   socket.on('player-update', data => {

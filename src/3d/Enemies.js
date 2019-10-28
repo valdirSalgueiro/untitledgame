@@ -25,7 +25,7 @@ const Drone = enemyState => {
   useEffect(() => {
     ref.current.position.copy(enemyState.position)
     ref.current.rotation.copy(enemyState.rotation)
-  }, [enemyState.quaternion, enemyState.position, enemyState.rotation])
+  }, [enemyState.position, enemyState.rotation])
 
   useFrame(() => {
     // ref.current.translateZ(-0.5)

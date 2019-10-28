@@ -108,6 +108,8 @@ const [useStore, api] = create((set, get) => {
         playAudio(audio.zap, 0.5)
       },
       addPlayer(id) {
+        console.log('adding player')
+        console.log(id)
         set(state => ({
           enemies: [
             ...state.enemies,
@@ -115,11 +117,15 @@ const [useStore, api] = create((set, get) => {
           ]
         }))
       },
+      removePlayer(id) {
+        console.log('removing player')
+        console.log(id)
+        set(state => ({
+          enemies: state.enemies.filter(e => e.guid !== id)
+        }))
+      },
       updatePlayer(data) {
-        //console.log('updatePlayer')
-        //console.log(get().enemies)
         set(state => ({ enemies: updateEnemies(state.enemies, data) }))
-        //console.log(get().enemies)
       },
       toggleSound(sound = !get().sound) {
         set({ sound })

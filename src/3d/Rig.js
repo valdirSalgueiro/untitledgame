@@ -4,7 +4,6 @@ import React, { useRef } from 'react'
 
 export default function Rig({ children }) {
   const group = useRef()
-  const rig = useRef()
   const { camera } = useThree()
   camera.position.copy(new THREE.Vector3())
 
@@ -16,9 +15,7 @@ export default function Rig({ children }) {
   return (
     <group ref={group}>
       <pointLight color="indianred" distance={400} intensity={5} position={[0, 100, -420]} />
-      <group position={[0, 0, -50]} ref={rig}>
-        {children}
-      </group>
+      <group position={[0, 0, -50]}>{children}</group>
     </group>
   )
 }
