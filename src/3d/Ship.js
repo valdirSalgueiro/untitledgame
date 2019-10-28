@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { useFrame, useLoader } from 'react-three-fiber'
+import { useFrame, useLoader, useThree } from 'react-three-fiber'
 import React, { useRef } from 'react'
 import useStore from '../store'
 
@@ -11,13 +11,15 @@ const laserMaterial = new THREE.MeshBasicMaterial({ color: lightgreen })
 const crossMaterial = new THREE.MeshBasicMaterial({ color: hotpink, fog: false })
 const position = new THREE.Vector3()
 const direction = new THREE.Vector3()
-const quaternion = new THREE.Quaternion()
 
 export default function Ship() {
+  const { camera } = useThree()
   const gltf = useLoader(GLTFLoader, '/ship.gltf')
   const mutation = useStore(state => state.mutation)
+  const actions = useStore(state => state.actions)
   const { clock, mouse, ray } = mutation
   const lasers = useStore(state => state.lasers)
+  const enemies = useStore(state => state.enemies)
   const main = useRef()
   const laserGroup = useRef()
   const laserLight = useRef()
@@ -25,6 +27,7 @@ export default function Ship() {
   const cross = useRef()
   const target = useRef()
   const mesh = useRef()
+  const group = useRef()
 
   useFrame(() => {
     main.current.rotation.z += (-mouse.x / 500 - main.current.rotation.z) * 0.1
@@ -44,11 +47,17 @@ export default function Ship() {
     // Get ships orientation and save it to the stores ray
     main.current.getWorldPosition(position)
     main.current.getWorldDirection(direction)
-    main.current.getWorldQuaternion(quaternion)
     ray.origin.copy(position)
     ray.direction.copy(direction.negate())
-    mutation.matrixWorld.copy(main.current.matrixWorld)
-    mutation.position.copy(position)
+
+    group.current.position.copy(mutation.player.position)
+    group.current.quaternion.copy(mutation.player.quaternion)
+
+    //if (enemies.length === 0) {
+    camera.position.copy(mutation.player.position)
+    camera.rotation.copy(mutation.player.rotation)
+    //}
+    actions.updateShip(main.current.rotation, main.current.position)
 
     // ...
     crossMaterial.color = mutation.hits ? lightgreen : hotpink
@@ -57,70 +66,75 @@ export default function Ship() {
   })
 
   return (
-    <group ref={main}>
-      <group scale={[3.5, 3.5, 3.5]}>
-        <group name="cross" position={[0, 0, -300]} ref={cross}>
-          <mesh material={crossMaterial} renderOrder={1000}>
-            <boxBufferGeometry args={[20, 2, 2]} attach="geometry" />
-          </mesh>
-          <mesh material={crossMaterial} renderOrder={1000}>
-            <boxBufferGeometry args={[2, 20, 2]} attach="geometry" />
-          </mesh>
-        </group>
-        <group name="target" position={[0, 0, -300]} ref={target}>
-          <mesh material={crossMaterial} position={[0, 20, 0]} renderOrder={1000}>
-            <boxBufferGeometry args={[40, 2, 2]} attach="geometry" />
-          </mesh>
-          <mesh material={crossMaterial} position={[0, -20, 0]} renderOrder={1000}>
-            <boxBufferGeometry args={[40, 2, 2]} attach="geometry" />
-          </mesh>
-          <mesh material={crossMaterial} position={[20, 0, 0]} renderOrder={1000}>
-            <boxBufferGeometry args={[2, 40, 2]} attach="geometry" />
-          </mesh>
-          <mesh material={crossMaterial} position={[-20, 0, 0]} renderOrder={1000}>
-            <boxBufferGeometry args={[2, 40, 2]} attach="geometry" />
-          </mesh>
-        </group>
-        <pointLight color="lightgreen" distance={100} intensity={0} position={[0, 0, -20]} ref={laserLight} />
-        <group ref={laserGroup}>
-          {lasers.map((t, i) => (
-            <group key={i}>
-              <mesh geometry={geometry} material={laserMaterial} position={[-2.8, 0, -0.8]} />
-              <mesh geometry={geometry} material={laserMaterial} position={[2.8, 0, -0.8]} />
+    <group ref={group}>
+      <pointLight color="indianred" distance={400} intensity={5} position={[0, 100, -420]} />
+      <group position={[0, 0, -50]}>
+        <group ref={main}>
+          <group scale={[3.5, 3.5, 3.5]}>
+            <group name="cross" position={[0, 0, -300]} ref={cross}>
+              <mesh material={crossMaterial} renderOrder={1000}>
+                <boxBufferGeometry args={[20, 2, 2]} attach="geometry" />
+              </mesh>
+              <mesh material={crossMaterial} renderOrder={1000}>
+                <boxBufferGeometry args={[2, 20, 2]} attach="geometry" />
+              </mesh>
             </group>
-          ))}
-        </group>
-        <group ref={mesh} rotation={[Math.PI / 2, Math.PI, 0]}>
-          <mesh name="Renault_(S,_T1)_0">
-            <bufferGeometry attach="geometry" {...gltf.__$[5].geometry} />
-            <meshStandardMaterial attach="material" color="#070707" />
-          </mesh>
-          <mesh name="Renault_(S,_T1)_1">
-            <bufferGeometry attach="geometry" {...gltf.__$[6].geometry} />
-            <meshStandardMaterial attach="material" color="black" />
-          </mesh>
-          <mesh name="Renault_(S,_T1)_2">
-            <bufferGeometry attach="geometry" {...gltf.__$[7].geometry} />
-            <meshStandardMaterial attach="material" color="#070707" />
-          </mesh>
-          <mesh name="Renault_(S,_T1)_3">
-            <bufferGeometry attach="geometry" {...gltf.__$[8].geometry} />
+            <group name="target" position={[0, 0, -300]} ref={target}>
+              <mesh material={crossMaterial} position={[0, 20, 0]} renderOrder={1000}>
+                <boxBufferGeometry args={[40, 2, 2]} attach="geometry" />
+              </mesh>
+              <mesh material={crossMaterial} position={[0, -20, 0]} renderOrder={1000}>
+                <boxBufferGeometry args={[40, 2, 2]} attach="geometry" />
+              </mesh>
+              <mesh material={crossMaterial} position={[20, 0, 0]} renderOrder={1000}>
+                <boxBufferGeometry args={[2, 40, 2]} attach="geometry" />
+              </mesh>
+              <mesh material={crossMaterial} position={[-20, 0, 0]} renderOrder={1000}>
+                <boxBufferGeometry args={[2, 40, 2]} attach="geometry" />
+              </mesh>
+            </group>
+            <pointLight color="lightgreen" distance={100} intensity={0} position={[0, 0, -20]} ref={laserLight} />
+            <group ref={laserGroup}>
+              {lasers.map((t, i) => (
+                <group key={i}>
+                  <mesh geometry={geometry} material={laserMaterial} position={[-2.8, 0, -0.8]} />
+                  <mesh geometry={geometry} material={laserMaterial} position={[2.8, 0, -0.8]} />
+                </group>
+              ))}
+            </group>
+            <group ref={mesh} rotation={[Math.PI / 2, Math.PI, 0]}>
+              <mesh name="Renault_(S,_T1)_0">
+                <bufferGeometry attach="geometry" {...gltf.__$[5].geometry} />
+                <meshStandardMaterial attach="material" color="#070707" />
+              </mesh>
+              <mesh name="Renault_(S,_T1)_1">
+                <bufferGeometry attach="geometry" {...gltf.__$[6].geometry} />
+                <meshStandardMaterial attach="material" color="black" />
+              </mesh>
+              <mesh name="Renault_(S,_T1)_2">
+                <bufferGeometry attach="geometry" {...gltf.__$[7].geometry} />
+                <meshStandardMaterial attach="material" color="#070707" />
+              </mesh>
+              <mesh name="Renault_(S,_T1)_3">
+                <bufferGeometry attach="geometry" {...gltf.__$[8].geometry} />
+                <meshBasicMaterial attach="material" color="lightblue" />
+              </mesh>
+              <mesh name="Renault_(S,_T1)_4">
+                <bufferGeometry attach="geometry" {...gltf.__$[9].geometry} />
+                <meshBasicMaterial attach="material" color="white" />
+              </mesh>
+              <mesh name="Renault_(S,_T1)_5">
+                <bufferGeometry attach="geometry" {...gltf.__$[10].geometry} />
+                <meshBasicMaterial attach="material" color="teal" />
+              </mesh>
+            </group>
+          </group>
+          <mesh position={[0, 1, 30]} ref={exhaust} scale={[1, 1, 30]}>
+            <dodecahedronBufferGeometry args={[1.5, 0]} attach="geometry" />
             <meshBasicMaterial attach="material" color="lightblue" />
-          </mesh>
-          <mesh name="Renault_(S,_T1)_4">
-            <bufferGeometry attach="geometry" {...gltf.__$[9].geometry} />
-            <meshBasicMaterial attach="material" color="white" />
-          </mesh>
-          <mesh name="Renault_(S,_T1)_5">
-            <bufferGeometry attach="geometry" {...gltf.__$[10].geometry} />
-            <meshBasicMaterial attach="material" color="teal" />
           </mesh>
         </group>
       </group>
-      <mesh position={[0, 1, 30]} ref={exhaust} scale={[1, 1, 30]}>
-        <dodecahedronBufferGeometry args={[1.5, 0]} attach="geometry" />
-        <meshBasicMaterial attach="material" color="lightblue" />
-      </mesh>
     </group>
   )
 }

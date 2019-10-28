@@ -30,9 +30,9 @@ const [useStore, api] = create((set, get) => {
 
     mutation: {
       t: 0,
-      position: new THREE.Vector3(),
-      matrixWorld: new THREE.Matrix4(),
-      rotation: new THREE.Euler(0, 0, 0, 'YXZ'),
+      player: new THREE.Object3D(),
+      shipRotation: new THREE.Euler(0, 0, 0, 'XYZ'),
+      shipPosition: new THREE.Vector3(),
       startTime: Date.now(),
 
       track,
@@ -111,10 +111,7 @@ const [useStore, api] = create((set, get) => {
         console.log('adding player')
         console.log(id)
         set(state => ({
-          enemies: [
-            ...state.enemies,
-            { guid: id, hit: new THREE.Vector3(), position: new THREE.Vector3(), matrixWorld: new THREE.Matrix4(), rotation: new THREE.Euler(0, 0, 0, 'YXZ') }
-          ]
+          enemies: [...state.enemies, { guid: id, hit: new THREE.Vector3() }]
         }))
       },
       removePlayer(id) {
@@ -132,6 +129,10 @@ const [useStore, api] = create((set, get) => {
         playAudio(audio.engine, 1, true)
         playAudio(audio.engine2, 0.3, true)
         playAudio(audio.bg, 1, true)
+      },
+      updateShip(rotation, position) {
+        get().mutation.shipRotation.set(rotation)
+        get().mutation.shipPosition.set(position)
       },
       updateMouse({ clientX: x, clientY: y }) {
         get().mutation.mouse.set(x - window.innerWidth / 2, y - window.innerHeight / 2)
@@ -160,7 +161,7 @@ function updateEnemies(enemies, data) {
 
     return {
       ...item,
-      ...{ position: data.position, matrixWorld: data.matrixWorld, rotation: data.rotation }
+      ...data
     }
   })
 }

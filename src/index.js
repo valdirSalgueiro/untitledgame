@@ -10,7 +10,6 @@ import Particles from './3d/Particles'
 import Planets from './3d/Planets'
 import React, { Suspense, useRef } from 'react'
 import ReactDOM from 'react-dom'
-import Rig from './3d/Rig'
 import Rocks from './3d/Rocks'
 import Ship from './3d/Ship'
 import Stars from './3d/Stars'
@@ -20,10 +19,9 @@ extend({ ShipControls })
 
 function Controls() {
   const controls = useRef()
-  const { camera } = useThree()
-  const mutation = useStore(state => state.mutation)
+  const { player, mouseRelative } = useStore(state => state.mutation)
   useFrame(() => controls.current.update())
-  return <shipControls args={[camera, mutation]} ref={controls} />
+  return <shipControls args={[player, mouseRelative]} ref={controls} />
 }
 
 function App() {
@@ -51,9 +49,7 @@ function App() {
         <Suspense fallback={null}>
           <Planets />
           <Enemies />
-          <Rig>
-            <Ship />
-          </Rig>
+          <Ship />
         </Suspense>
         <Effects />
       </Canvas>

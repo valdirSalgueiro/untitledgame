@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect } from 'react'
 import useStore from './store'
 
 export default function Connection() {
@@ -40,9 +40,10 @@ export default function Connection() {
 
   function update() {
     socket.emit('player-update', {
-      position: mutation.position,
-      matrixWorld: mutation.matrixWorld,
-      rotation: mutation.rotation
+      position: mutation.player.position,
+      rotation: mutation.player.rotation,
+      shipRotation: mutation.shipRotation,
+      shipPosition: mutation.shipPosition
     })
   }
 
