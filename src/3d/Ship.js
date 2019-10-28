@@ -45,7 +45,8 @@ export default function Ship() {
     ray.origin.copy(position)
     ray.direction.copy(direction.negate())
     mutation.position.copy(position)
-    mutation.direction.copy(direction)
+    mutation.quaternion.copy(main.current.quaternion)
+    mutation.rotation.copy(main.current.rotation)
 
     // ...
     crossMaterial.color = mutation.hits ? lightgreen : hotpink

@@ -29,7 +29,8 @@ export default function Connection() {
   function update() {
     socket.emit('player-update', {
       position: mutation.position,
-      direction: mutation.direction
+      quaternion: mutation.quaternion,
+      rotation: mutation.rotation
     })
   }
 

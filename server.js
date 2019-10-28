@@ -19,10 +19,7 @@ io.on('connection', function(socket) {
   socket.on('player-update', data => {
     players[socket.id] = data
 
-    socket.broadcast.emit('player-update', {
-      socketId: socket.id,
-      data: players[socket.id]
-    })
+    socket.broadcast.emit('player-update', { ...data, guid: socket.id })
   })
 
   socket.on('disconnect', () => {

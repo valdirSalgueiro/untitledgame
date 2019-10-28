@@ -31,7 +31,8 @@ const [useStore, api] = create((set, get) => {
     mutation: {
       t: 0,
       position: new THREE.Vector3(),
-      direction: new THREE.Vector3(),
+      quaternion: new THREE.Quaternion(),
+      rotation: new THREE.Euler(0, 0, 0, 'YXZ'),
       startTime: Date.now(),
 
       track,
@@ -107,10 +108,18 @@ const [useStore, api] = create((set, get) => {
         playAudio(audio.zap, 0.5)
       },
       addPlayer(id) {
-        set(state => ({ enemies: [...state.enemies, { guid: id, hit: new THREE.Vector3(), position: new THREE.Vector3(), direction: new THREE.Vector3() }] }))
+        set(state => ({
+          enemies: [
+            ...state.enemies,
+            { guid: id, hit: new THREE.Vector3(), position: new THREE.Vector3(), quaternion: new THREE.Quaternion(), rotation: new THREE.Euler(0, 0, 0, 'YXZ') }
+          ]
+        }))
       },
       updatePlayer(data) {
+        //console.log('updatePlayer')
+        //console.log(get().enemies)
         set(state => ({ enemies: updateEnemies(state.enemies, data) }))
+        //console.log(get().enemies)
       },
       toggleSound(sound = !get().sound) {
         set({ sound })
@@ -136,7 +145,6 @@ const [useStore, api] = create((set, get) => {
 })
 
 function updateEnemies(enemies, data) {
-  console.log('updating properties')
   return enemies.map(item => {
     if (item.guid !== data.guid) {
       return item
@@ -144,7 +152,7 @@ function updateEnemies(enemies, data) {
 
     return {
       ...item,
-      ...{ position: data.direction }
+      ...{ position: data.position, quaternion: data.quaternion, rotation: data.rotation }
     }
   })
 }

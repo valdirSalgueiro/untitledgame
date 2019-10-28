@@ -10,7 +10,8 @@ const ShipControls = function(object, mutation) {
   this.mutation = mutation
 
   this.update = function() {
-    this.object.translateZ(-0.5)
+    //this.object.translateZ(-0.5)
+    this.object.position.copy(new THREE.Vector3(0, 0, 100))
 
     euler.setFromQuaternion(scope.object.quaternion)
 
@@ -26,46 +27,12 @@ const ShipControls = function(object, mutation) {
 
     euler.x = Math.max(-PI_2, Math.min(PI_2, euler.x))
 
-    scope.object.quaternion.setFromEuler(euler)
+    //scope.object.quaternion.setFromEuler(euler)
   }
 
   const euler = new THREE.Euler(0, 0, 0, 'YXZ')
 
   const PI_2 = Math.PI / 2
-
-  function handleKeyDown(event) {
-    let needsUpdate = false
-
-    switch (event.keyCode) {
-      case scope.keys.UP:
-        console.log('UP')
-        scope.object.rotateX(0.025)
-        needsUpdate = true
-        break
-
-      case scope.keys.BOTTOM:
-        console.log('BOTTOM')
-        scope.object.rotateX(-0.025)
-        needsUpdate = true
-        break
-
-      case scope.keys.LEFT:
-        console.log('LEFT')
-        scope.object.rotateY(0.025)
-        needsUpdate = true
-        break
-
-      case scope.keys.RIGHT:
-        console.log('RIGHT')
-        scope.object.rotateY(-0.025)
-        needsUpdate = true
-        break
-    }
-
-    if (needsUpdate) {
-      event.preventDefault()
-    }
-  }
 
   function map(x, inMin, inMax, outMin, outMax) {
     return ((x - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin

@@ -10,10 +10,10 @@ const laserMaterial = new THREE.MeshBasicMaterial({ color: lightgreen })
 
 export default function Enemies() {
   const enemies = useStore(state => state.enemies)
-  return enemies.map((data, i) => <Drone data={data} key={i} />)
+  return enemies.map((data, i) => <Drone {...data} key={i} />)
 }
 
-const Drone = data => {
+const Drone = enemyState => {
   const { clock } = useStore(state => state.mutation)
   const lasers = useStore(state => state.lasers)
   const laserGroup = useRef()
@@ -23,15 +23,12 @@ const Drone = data => {
   const ref = useRef()
 
   useEffect(() => {
-    console.log('updateEnemy')
-    console.log(data.data.position)
-    console.log(data.data.direction)
-    ref.current.position.copy(data.data.position)
-    ref.current.lookAt(data.data.direction)
-  }, [data.data.direction, data.data.position])
+    ref.current.position.copy(enemyState.position)
+    ref.current.rotation.copy(enemyState.rotation)
+  }, [enemyState.quaternion, enemyState.position, enemyState.rotation])
 
   useFrame(() => {
-    ref.current.translateZ(-0.5)
+    // ref.current.translateZ(-0.5)
     exhaust.current.scale.x = 1 + Math.sin(clock.getElapsedTime() * 200)
     exhaust.current.scale.y = 1 + Math.sin(clock.getElapsedTime() * 200)
   })
