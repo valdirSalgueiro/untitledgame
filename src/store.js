@@ -33,6 +33,7 @@ const [useStore, api] = create((set, get) => {
       socketId: 'offline',
 
       scale: 1,
+      isAlive: false,
       fov: 70,
       hits: false,
       looptime: 40 * 1000,

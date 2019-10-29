@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-const ShipControls = function(player, mouseRelative) {
+const ShipControls = function(player, mouseRelative, isAlive) {
   this.player = player
   const scope = this
   this.keys = { SPACE: 32, LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 }
@@ -8,11 +8,12 @@ const ShipControls = function(player, mouseRelative) {
   this.domElement = document
 
   this.mouseRelative = mouseRelative
+  this.isAlive = isAlive
   this.locked = false
   this.player.position.copy(new THREE.Vector3(0, 0, 1000))
 
   this.update = function() {
-    if (!scope.locked) {
+    if (scope.isAlive) {
       this.player.translateZ(-1.0)
       euler.setFromQuaternion(scope.player.quaternion)
 
@@ -43,7 +44,7 @@ const ShipControls = function(player, mouseRelative) {
   function map(x, inMin, inMax, outMin, outMax) {
     return ((x - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin
   }
-  window.addEventListener('keydown', handleKeyDown, false)
+  //window.addEventListener('keydown', handleKeyDown, false)
 }
 
 ShipControls.prototype = Object.create(THREE.EventDispatcher.prototype)

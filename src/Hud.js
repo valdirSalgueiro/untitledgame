@@ -5,16 +5,27 @@ import useStore from './store'
 export default function Hud() {
   const points = useStore(state => state.points)
   const distance = useStore(state => state.distance)
+  const { isAlive } = useStore(state => state.mutation)
 
-  return (
-    <>
-      <LowerLeft>
-        <h2>{distance}</h2>
-        <h1>{points}</h1>
-      </LowerLeft>
-      <Global />
-    </>
-  )
+  if (isAlive)
+    return (
+      <>
+        <LowerLeft>
+          <h2>{distance}</h2>
+          <h1>{points}</h1>
+        </LowerLeft>
+        <Global />
+      </>
+    )
+  else {
+    return (
+      <>
+        <Title>Cosmo Revolution</Title>
+        <input type="text"></input>
+        <Global />
+      </>
+    )
+  }
 }
 
 const base = css`
@@ -28,16 +39,50 @@ const base = css`
   color: indianred;
 `
 
-const UpperLeft = styled.div`
+const Title = styled.div`
   ${base}
-  top: 40px;
-  left: 50px;
-  font-size: 2em;
-  transform: skew(5deg, 10deg);
-  pointer-events: all;
-  cursor: pointer;
-  @media only screen and (max-width: 900px) {
-    font-size: 1.5em;
+  text-align: center;
+  vertical-align: middle;
+  top: 200px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  filter: blur(0.5px);
+  color: rgb(207, 207, 257);
+  margin: 0;
+  font-size: 15em;
+  line-height: 1em;
+  text-shadow: 0px 0px 1px rgb(167, 167, 167), 0px 1px 1px rgb(167, 167, 167), 0px 2px 1px rgb(167, 167, 167), 1px 1px 1px rgb(167, 167, 167), 1px 2px 1px rgb(167, 167, 167),
+    1px 3px 1px rgb(167, 167, 167), 2px 2px 1px rgb(167, 167, 167), 2px 3px 1px rgb(167, 167, 167), 2px 4px 1px rgb(167, 167, 167), 1px 10px 30px rgba(0, 0, 0, 0.8),
+    1px 10px 70px rgba(0, 0, 0, 0.8), 0px 5px 5px rgba(0, 0, 0, 0.8), -5px 5px 20px rgba(0, 0, 0, 0.8), 5px 5px 20px rgba(0, 0, 0, 0.8), 1px 1px 120px rgba(255, 255, 255, 0.5);
+  ::after {
+    content: 'Cosmo Revolution';
+    position: absolute;
+    text-align: center;
+    vertical-align: middle;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    text-shadow: 0px 0px 100px rgba(11, 124, 199, 0.5);
+    animation: cycle 10s linear infinite;
+  }
+  @keyframes cycle {
+    0% {
+      text-shadow: 0px 0px 100px rgba(11, 124, 199, 0.5);
+    }
+    20% {
+      text-shadow: 0px 0px 100px rgba(168, 11, 199, 0.5);
+    }
+    40% {
+      text-shadow: 0px 0px 100px rgba(11, 199, 96, 0.5);
+    }
+    60% {
+      text-shadow: 0px 0px 100px rgba(199, 11, 11, 0.5);
+    }
+    80% {
+      text-shadow: 0px 0px 100px rgba(199, 96, 11, 0.5);
+    }
   }
 `
 

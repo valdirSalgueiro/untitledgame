@@ -28,6 +28,7 @@ export default function Ship() {
   const group = useRef()
 
   useFrame(() => {
+    if (!mutation.isAlive) return
     main.current.rotation.z += (-mouse.x / 500 - main.current.rotation.z) * 0.1
     main.current.rotation.x += (-mouse.y / 1200 - main.current.rotation.x) * 0.1
     main.current.rotation.y += (-mouse.x / 1200 - main.current.rotation.y) * 0.1
