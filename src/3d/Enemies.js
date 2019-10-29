@@ -15,7 +15,7 @@ export default function Enemies() {
 
 function Drone(data) {
   const { clock } = useStore(state => state.mutation)
-  const lasers = useStore(state => state.lasers)
+  const lasers = useStore(state => state.lasers).filter(l => l.socketId === data.socketId)
   const laserGroup = useRef()
   const gltf = useLoader(GLTFLoader, '/ship.gltf')
   const exhaust = useRef()
@@ -29,8 +29,6 @@ function Drone(data) {
       group.current.rotation.copy(data.rotation)
       main.current.position.copy(data.shipPosition)
       main.current.rotation.copy(data.shipRotation)
-      //group.current.updateMatrix()
-      //main.current.updateMatrix()
     }
   }, [data])
 

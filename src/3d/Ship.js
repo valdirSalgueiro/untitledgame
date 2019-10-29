@@ -17,7 +17,7 @@ export default function Ship() {
   const gltf = useLoader(GLTFLoader, '/ship.gltf')
   const mutation = useStore(state => state.mutation)
   const { clock, mouse, ray } = mutation
-  const lasers = useStore(state => state.lasers)
+  const lasers = useStore(state => state.lasers).filter(l => l.socketId === mutation.socketId)
   const main = useRef()
   const laserGroup = useRef()
   const laserLight = useRef()
@@ -40,7 +40,7 @@ export default function Ship() {
       const group = laserGroup.current.children[i]
       group.position.z -= 10
     }
-    laserLight.current.intensity += ((lasers.length && Date.now() - lasers[lasers.length - 1] < 100 ? 20 : 0) - laserLight.current.intensity) * 0.3
+    laserLight.current.intensity += ((lasers.length && Date.now() - lasers[lasers.length - 1].time < 100 ? 20 : 0) - laserLight.current.intensity) * 0.3
 
     // Get ships orientation and save it to the stores ray
     main.current.getWorldPosition(position)

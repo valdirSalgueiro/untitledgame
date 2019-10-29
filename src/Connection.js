@@ -12,10 +12,12 @@ export default function Connection() {
     console.log('> Connected to server')
   })
 
-  socket.on('bootstrap', players => {
+  socket.on('bootstrap', data => {
     console.log('> bootstrap')
-    console.log(players)
-    for (const key of Object.keys(players)) {
+    console.log(data.players)
+    //actions.setSocketId(data.socketId)
+    mutation.socketId = data.socketId
+    for (const key of Object.keys(data.players)) {
       actions.addPlayer(key)
     }
   })
@@ -32,6 +34,10 @@ export default function Connection() {
 
   socket.on('player-update', data => {
     actions.updatePlayer(data)
+  })
+
+  socket.on('player-shoot', data => {
+    actions.shoot(data)
   })
 
   socket.on('disconnect', () => {

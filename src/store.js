@@ -5,15 +5,14 @@ import io from 'socket.io-client'
 
 const [useStore, api] = create((set, get) => {
   let cancelLaserTO
-  const socket = io()
+  const socket = io('http://localhost:5000')
 
   return {
     sound: false,
     camera: undefined,
     points: 0,
     health: 100,
-    socketId: 'offline',
-    lasers: {},
+    lasers: [],
     explosions: [],
     socket,
 
@@ -25,6 +24,7 @@ const [useStore, api] = create((set, get) => {
       shipRotation: new THREE.Euler(0, 0, 0, 'YXZ'),
       shipPosition: new THREE.Vector3(),
       startTime: Date.now(),
+      socketId: 'offline',
 
       scale: 1,
       fov: 70,
@@ -50,8 +50,8 @@ const [useStore, api] = create((set, get) => {
         mutation.clock.start()
         actions.toggleSound(get().sound)
       },
-      shoot() {
-        set(state => ({ lasers: [...state.lasers, Date.now()] }))
+      shoot(socketId) {
+        set(state => ({ lasers: [...state.lasers, { time: Date.now(), socketId }] }))
         clearTimeout(cancelLaserTO)
         cancelLaserTO = setTimeout(
           () =>

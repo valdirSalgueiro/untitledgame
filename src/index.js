@@ -25,13 +25,17 @@ function Controls() {
 }
 
 function App() {
-  const { fov } = useStore(state => state.mutation)
+  const mutation = useStore(state => state.mutation)
   const actions = useStore(state => state.actions)
+  const socket = useStore(state => state.socket)
   return (
     <>
       <Canvas
-        camera={{ position: [0, 0, 2000], near: 0.01, far: 10000, fov }}
-        onClick={actions.shoot}
+        camera={{ position: [0, 0, 2000], near: 0.01, far: 10000, ...mutation.fov }}
+        onClick={() => {
+          socket.emit('player-shoot')
+          actions.shoot(mutation.socketId)
+        }}
         onCreated={({ gl, camera }) => {
           actions.init(camera)
           gl.gammaInput = true

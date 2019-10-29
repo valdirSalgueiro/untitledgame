@@ -14,7 +14,7 @@ const game = createGame()
 
 io.on('connection', function(socket) {
   console.log(`player connected ${socket.id}`)
-  socket.emit('bootstrap', game.players)
+  socket.emit('bootstrap', { players: game.players, socketId: socket.id })
 
   socket.broadcast.emit('player-add', socket.id)
 
@@ -22,6 +22,10 @@ io.on('connection', function(socket) {
     game.updatePlayer(socket.id, data)
 
     socket.broadcast.emit('player-update', { ...data, socketId: socket.id })
+  })
+
+  socket.on('player-shoot', () => {
+    socket.broadcast.emit('player-shoot', socket.id)
   })
 
   socket.on('disconnect', () => {
