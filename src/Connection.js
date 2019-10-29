@@ -1,3 +1,4 @@
+import * as THREE from 'three'
 import React, { useEffect } from 'react'
 import useStore from './store'
 
@@ -33,6 +34,8 @@ export default function Connection() {
   })
 
   socket.on('player-update', data => {
+    data.worldPosition = new THREE.Vector3(data.position.x, data.position.y, data.position.z)
+    data.worldPosition.add(new THREE.Vector3(data.shipPosition.x, data.shipPosition.y, data.shipPosition.z))
     actions.updatePlayer(data)
   })
 

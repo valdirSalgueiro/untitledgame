@@ -15,7 +15,7 @@ function make(color, speed) {
 
 export default function Explosions() {
   const explosions = useStore(state => state.explosions)
-  return explosions.map(({ guid, offset, scale }) => <Explosion key={guid} position={offset} scale={scale * 0.75} />)
+  return explosions.map(({ guid, position, scale }) => <Explosion key={guid} position={position} scale={scale * 0.75} />)
 }
 
 function Explosion({ position, scale }) {

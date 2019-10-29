@@ -48,6 +48,7 @@ function App() {
         <ambientLight intensity={0.25} />
         <Controls />
         <Connection />
+        <Explosions />
         <Suspense fallback={null}>
           <Planets />
           <Enemies />

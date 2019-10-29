@@ -36,7 +36,7 @@ function Drone(data) {
     group.current.translateZ(-1.0)
     for (let i = 0; i < lasers.length; i++) {
       const group = laserGroup.current.children[i]
-      group.position.z -= 10
+      group.position.z -= 20
     }
     exhaust.current.scale.x = 1 + Math.sin(clock.getElapsedTime() * 200)
     exhaust.current.scale.y = 1 + Math.sin(clock.getElapsedTime() * 200)

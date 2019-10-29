@@ -38,7 +38,7 @@ export default function Ship() {
 
     for (let i = 0; i < lasers.length; i++) {
       const group = laserGroup.current.children[i]
-      group.position.z -= 10
+      group.position.z -= 20
     }
     laserLight.current.intensity += ((lasers.length && Date.now() - lasers[lasers.length - 1].time < 100 ? 20 : 0) - laserLight.current.intensity) * 0.3
 

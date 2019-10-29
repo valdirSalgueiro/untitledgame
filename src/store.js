@@ -1,10 +1,15 @@
 import * as THREE from 'three'
 import * as audio from './audio'
+import { addEffect } from 'react-three-fiber'
 import create from 'zustand'
 import io from 'socket.io-client'
 
+let guid = 1
+
 const [useStore, api] = create((set, get) => {
   let cancelLaserTO
+  let cancelExplosionTO = undefined
+  const box = new THREE.Box3()
   const socket = io(':5000')
 
   return {
@@ -49,6 +54,35 @@ const [useStore, api] = create((set, get) => {
         set({ camera })
         mutation.clock.start()
         actions.toggleSound(get().sound)
+
+        addEffect(() => {
+          const { enemies } = get()
+
+          const time = Date.now()
+
+          // test for hits
+          const e = enemies.filter(actions.test)
+          mutation.hits = e.length
+          const lasers = get().lasers.filter(l => l.socketId === mutation.socketId)
+          if (mutation.hits && lasers.length && time - lasers[lasers.length - 1].time < 100) {
+            //socket.emit('player-hit', e.socketId)
+            console.log(`hit'em! ${e.socketId}`)
+
+            const update = { ...e[0], time: Date.now(), guid: guid++, scale: 1 + Math.random() * 2.5, position: e[0].worldPosition }
+            set(state => ({ explosions: [...state.explosions, update] }))
+            clearTimeout(cancelExplosionTO)
+            cancelExplosionTO = setTimeout(
+              () =>
+                set(state => ({
+                  explosions: state.explosions.filter(({ time }) => Date.now() - time <= 1000)
+                })),
+              1000
+            )
+            set(state => ({
+              points: state.points + 1
+            }))
+          }
+        })
       },
       shoot(socketId) {
         set(state => ({ lasers: [...state.lasers, { time: Date.now(), socketId }] }))
@@ -66,7 +100,7 @@ const [useStore, api] = create((set, get) => {
         console.log('adding player')
         console.log(id)
         set(state => ({
-          enemies: [...state.enemies, { socketId: id, hit: new THREE.Vector3() }]
+          enemies: [...state.enemies, { socketId: id, hit: new THREE.Vector3(), size: 10, scale: 1 }]
         }))
       },
       removePlayer(id) {
@@ -88,6 +122,17 @@ const [useStore, api] = create((set, get) => {
       updateMouse({ clientX: x, clientY: y }) {
         get().mutation.mouse.set(x - window.innerWidth / 2, y - window.innerHeight / 2)
         get().mutation.mouseRelative.set(-0.5 + x / window.innerWidth, -0.5 + y / window.innerHeight)
+      },
+      test(data) {
+        if (data.worldPosition) {
+          box.min.copy(data.worldPosition)
+          box.max.copy(data.worldPosition)
+          box.expandByScalar(data.size * data.scale)
+          data.hit.set(10000, 10000, 10000)
+          const result = get().mutation.ray.intersectBox(box, data.hit)
+          data.distance = get().mutation.ray.origin.distanceTo(data.hit)
+          return result
+        }
       }
     }
   }
