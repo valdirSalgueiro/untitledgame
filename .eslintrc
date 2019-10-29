@@ -12,6 +12,7 @@
     "react/prop-types": "off",
     "react/display-name": "off",
     "react/sort-comp": "error",
+
     "prefer-const": "error",
     "prefer-spread": "error",
     "prefer-template": "error",

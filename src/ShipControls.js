@@ -9,6 +9,7 @@ const ShipControls = function(player, mouseRelative) {
 
   this.mouseRelative = mouseRelative
   this.locked = false
+  this.player.position.copy(new THREE.Vector3(0, 0, 1000))
 
   this.update = function() {
     if (!scope.locked) {

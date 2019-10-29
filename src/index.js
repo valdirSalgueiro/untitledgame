@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { Canvas, extend, useFrame, useThree } from 'react-three-fiber'
+import { Canvas, extend, useFrame } from 'react-three-fiber'
 import { ShipControls } from './ShipControls'
 import Connection from './Connection'
 import Effects from './3d/Effects'
@@ -48,6 +48,7 @@ function App() {
         <ambientLight intensity={0.25} />
         <Controls />
         <Connection />
+        <Particles />
         <Explosions />
         <Suspense fallback={null}>
           <Planets />

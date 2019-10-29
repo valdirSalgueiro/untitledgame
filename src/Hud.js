@@ -4,40 +4,15 @@ import useStore from './store'
 
 export default function Hud() {
   const points = useStore(state => state.points)
-  const health = useStore(state => state.health)
-  const sound = useStore(state => state.sound)
-  const toggle = useStore(state => state.actions.toggleSound)
+  const distance = useStore(state => state.distance)
 
-  const seconds = useRef()
-  useEffect(() => {
-    const t = Date.now()
-    const i = setInterval(() => (seconds.current.innerText = ((Date.now() - t) / 1000).toFixed(1)), 100)
-    return () => clearInterval(i)
-  }, [])
-
-  const score = useMemo(() => (points >= 1000 ? `${(points / 1000).toFixed(1)}K` : points), [points])
   return (
     <>
-      <UpperLeft onClick={() => toggle()}>
-        sound
-        <br />
-        {sound ? 'off' : 'on'}
-      </UpperLeft>
-      <UpperRight>
-        <a href="https://codesandbox.io/s/react-three-fiber-untitled-game-4pp5r">source</a>
-        <br />
-        <a href="https://twitter.com/0xca0a">twitter</a>
-        <br />
-        <a href="https://github.com/react-spring/react-three-fiber">github</a>
-      </UpperRight>
       <LowerLeft>
-        <h2 ref={seconds}>0.0</h2>
-        <h1>{score}</h1>
+        <h2>{distance}</h2>
+        <h1>{points}</h1>
       </LowerLeft>
       <Global />
-      <LowerRight>
-        <div style={{ width: `${health}%` }} />
-      </LowerRight>
     </>
   )
 }
@@ -61,24 +36,6 @@ const UpperLeft = styled.div`
   transform: skew(5deg, 10deg);
   pointer-events: all;
   cursor: pointer;
-  @media only screen and (max-width: 900px) {
-    font-size: 1.5em;
-  }
-`
-
-const UpperRight = styled.div`
-  ${base}
-  text-align: right;
-  top: 40px;
-  right: 50px;
-  font-size: 2em;
-  transform: skew(-5deg, -10deg);
-  pointer-events: all;
-  cursor: pointer;
-  & > a {
-    color: indianred;
-    text-decoration: none;
-  }
   @media only screen and (max-width: 900px) {
     font-size: 1.5em;
   }
@@ -110,27 +67,6 @@ const LowerLeft = styled.div`
     }
   }
 `
-
-const LowerRight = styled.div`
-  ${base}
-  bottom: 70px;
-  right: 50px;
-  transform: skew(5deg, 10deg);
-  height: 60px;
-  width: 200px;
-  background: black;
-  & > div {
-    height: 100%;
-    background: indianred;
-  }
-
-  @media only screen and (max-width: 900px) {
-    bottom: 50px;
-    height: 40px;
-    width: 150px;
-  }
-`
-
 const Global = createGlobalStyle`
   * {
     box-sizing: border-box;

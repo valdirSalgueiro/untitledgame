@@ -16,6 +16,7 @@ const [useStore, api] = create((set, get) => {
     sound: false,
     camera: undefined,
     points: 0,
+    distance: 0,
     health: 100,
     lasers: [],
     explosions: [],
@@ -56,7 +57,11 @@ const [useStore, api] = create((set, get) => {
         actions.toggleSound(get().sound)
 
         addEffect(() => {
-          const { enemies } = get()
+          const { enemies, mutation } = get()
+          const a = new THREE.Vector3(0, 0, 0)
+          const distance = Math.round(a.distanceTo(mutation.player.position))
+
+          set({ distance })
 
           const time = Date.now()
 
