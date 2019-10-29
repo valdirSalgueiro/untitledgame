@@ -33,7 +33,11 @@ function Drone(data) {
   }, [data])
 
   useFrame(() => {
-    // ref.current.translateZ(-0.5)
+    group.current.translateZ(-1.0)
+    for (let i = 0; i < lasers.length; i++) {
+      const group = laserGroup.current.children[i]
+      group.position.z -= 10
+    }
     exhaust.current.scale.x = 1 + Math.sin(clock.getElapsedTime() * 200)
     exhaust.current.scale.y = 1 + Math.sin(clock.getElapsedTime() * 200)
   })

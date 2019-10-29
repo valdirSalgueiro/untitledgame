@@ -5,7 +5,7 @@ import io from 'socket.io-client'
 
 const [useStore, api] = create((set, get) => {
   let cancelLaserTO
-  const socket = io('http://localhost:5000')
+  const socket = io(':5000')
 
   return {
     sound: false,
@@ -83,7 +83,7 @@ const [useStore, api] = create((set, get) => {
         set({ sound })
         playAudio(audio.engine, 1, true)
         playAudio(audio.engine2, 0.3, true)
-        playAudio(audio.bg, 1, true)
+        //playAudio(audio.bg, 1, true)
       },
       updateMouse({ clientX: x, clientY: y }) {
         get().mutation.mouse.set(x - window.innerWidth / 2, y - window.innerHeight / 2)
