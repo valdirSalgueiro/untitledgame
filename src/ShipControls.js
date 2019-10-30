@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-const ShipControls = function(player, mouseRelative, isAlive) {
+const ShipControls = function(player, mouseRelative, actions) {
   this.player = player
   const scope = this
   this.keys = { SPACE: 32, LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 }
@@ -8,9 +8,10 @@ const ShipControls = function(player, mouseRelative, isAlive) {
   this.domElement = document
 
   this.mouseRelative = mouseRelative
-  this.isAlive = isAlive
+  this.isAlive = false
   this.locked = false
   this.player.position.copy(new THREE.Vector3(0, 0, 1000))
+  this.playerName = ''
 
   this.update = function() {
     if (scope.isAlive) {
@@ -27,13 +28,37 @@ const ShipControls = function(player, mouseRelative, isAlive) {
   }
 
   function handleKeyDown(event) {
-    switch (event.keyCode) {
-      case scope.keys.SPACE:
-        scope.locked = !scope.locked
-        console.log(scope.locked)
-        break
-      default:
-        break
+    if (scope.isAlive) {
+      switch (event.keyCode) {
+        case scope.keys.SPACE:
+          scope.locked = !scope.locked
+          console.log(scope.locked)
+          break
+        default:
+          break
+      }
+    } else {
+      const keycode = event.keyCode
+
+      if (keycode === 13) {
+        actions.spawn(true)
+        scope.isAlive = true
+        window.removeEventListener('keydown', handleKeyDown, false)
+      } else {
+        const valid =
+          (keycode > 47 && keycode < 58) || // number keys
+          (keycode > 64 && keycode < 91) || // letter keys
+          (keycode > 95 && keycode < 112) || // numpad keys
+          (keycode > 185 && keycode < 193) || // ;=,-./` (in order)
+          (keycode > 218 && keycode < 223) // [\]' (in order)
+        if (keycode === 8) {
+          scope.playerName = scope.playerName.substring(0, Math.max(0, scope.playerName.length - 1))
+          actions.updateName(scope.playerName)
+        } else if (valid) {
+          scope.playerName = scope.playerName + String.fromCharCode(keycode)
+          actions.updateName(scope.playerName)
+        }
+      }
     }
   }
 
@@ -44,7 +69,7 @@ const ShipControls = function(player, mouseRelative, isAlive) {
   function map(x, inMin, inMax, outMin, outMax) {
     return ((x - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin
   }
-  //window.addEventListener('keydown', handleKeyDown, false)
+  window.addEventListener('keydown', handleKeyDown, false)
 }
 
 ShipControls.prototype = Object.create(THREE.EventDispatcher.prototype)

@@ -19,9 +19,10 @@ extend({ ShipControls })
 
 function Controls() {
   const controls = useRef()
-  const { player, mouseRelative, isAlive } = useStore(state => state.mutation)
+  const { player, mouseRelative } = useStore(state => state.mutation)
+  const actions = useStore(state => state.actions)
   useFrame(() => controls.current.update())
-  return <shipControls args={[player, mouseRelative, isAlive]} ref={controls} />
+  return <shipControls args={[player, mouseRelative, actions]} ref={controls} />
 }
 
 function App() {

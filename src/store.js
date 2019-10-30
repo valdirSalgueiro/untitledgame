@@ -15,12 +15,14 @@ const [useStore, api] = create((set, get) => {
   return {
     sound: false,
     camera: undefined,
+    playerName: 'Type your name',
     points: 0,
     distance: 0,
     health: 100,
     lasers: [],
     explosions: [],
     socket,
+    isAlive: false,
 
     enemies: [],
 
@@ -33,7 +35,6 @@ const [useStore, api] = create((set, get) => {
       socketId: 'offline',
 
       scale: 1,
-      isAlive: false,
       fov: 70,
       hits: false,
       looptime: 40 * 1000,
@@ -124,6 +125,12 @@ const [useStore, api] = create((set, get) => {
         playAudio(audio.engine, 1, true)
         playAudio(audio.engine2, 0.3, true)
         //playAudio(audio.bg, 1, true)
+      },
+      spawn(isAlive) {
+        set({ isAlive })
+      },
+      updateName(playerName) {
+        set({ playerName })
       },
       updateMouse({ clientX: x, clientY: y }) {
         get().mutation.mouse.set(x - window.innerWidth / 2, y - window.innerHeight / 2)

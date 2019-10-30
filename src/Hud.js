@@ -5,7 +5,8 @@ import useStore from './store'
 export default function Hud() {
   const points = useStore(state => state.points)
   const distance = useStore(state => state.distance)
-  const { isAlive } = useStore(state => state.mutation)
+  const playerName = useStore(state => state.playerName)
+  const isAlive = useStore(state => state.isAlive)
 
   if (isAlive)
     return (
@@ -21,7 +22,9 @@ export default function Hud() {
     return (
       <>
         <Title>Cosmo Revolution</Title>
-        <input type="text"></input>
+        <LowerLeft>
+          <h2>{playerName}</h2>
+        </LowerLeft>
         <Global />
       </>
     )
