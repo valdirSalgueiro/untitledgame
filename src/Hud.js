@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react'
+import React from 'react'
 import styled, { createGlobalStyle, css } from 'styled-components'
 import useStore from './store'
 
@@ -7,17 +7,31 @@ export default function Hud() {
   const distance = useStore(state => state.distance)
   const playerName = useStore(state => state.playerName)
   const isAlive = useStore(state => state.isAlive)
+  const spawned = useStore(state => state.spawned)
+  const sound = useStore(state => state.sound)
+  const toggle = useStore(state => state.actions.toggleSound)
 
-  if (isAlive)
-    return (
-      <>
-        <LowerLeft>
-          <h2>{distance}</h2>
-          <h1>{points}</h1>
-        </LowerLeft>
-        <Global />
-      </>
-    )
+  if (spawned)
+    if (isAlive) {
+      return (
+        <>
+          <LowerLeft>
+            <h2>{distance}</h2>
+            <h1>{points}</h1>
+          </LowerLeft>
+          <Global />
+        </>
+      )
+    } else {
+      return (
+        <>
+          <Wasted>
+            <h2>Wasted</h2>
+          </Wasted>
+          <Global />
+        </>
+      )
+    }
   else {
     return (
       <>
@@ -25,6 +39,18 @@ export default function Hud() {
         <LowerLeft>
           <h2>{playerName}</h2>
         </LowerLeft>
+        <UpperLeft onClick={() => toggle()}>
+          sound
+          <br />
+          {sound ? 'off' : 'on'}
+        </UpperLeft>
+        <UpperRight>
+          <a href="https://codesandbox.io/s/react-three-fiber-untitled-game-4pp5r">original source</a>
+          <br />
+          <a href="https://twitter.com/0xca0a">original creator twitter</a>
+          <br />
+          <a href="https://github.com/valdirSalgueiro/untitledgame">github</a>
+        </UpperRight>
         <Global />
       </>
     )
@@ -40,6 +66,21 @@ const base = css`
   line-height: 1em;
   pointer-events: none;
   color: indianred;
+`
+
+const Wasted = styled.div`
+  ${base}
+  text-align: center;
+  vertical-align: middle;
+  top: 200px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  filter: blur(0.5px);
+  color: rgb(207, 207, 257);
+  margin: 0;
+  font-size: 12em;
+  line-height: 1em;
 `
 
 const Title = styled.div`
@@ -143,5 +184,35 @@ const Global = createGlobalStyle`
     font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, ubuntu, roboto, noto, segoe ui, arial, sans-serif;
     color: black;
     background: white;
+  }
+`
+const UpperLeft = styled.div`
+  ${base}
+  top: 40px;
+  left: 50px;
+  font-size: 2em;
+  transform: skew(5deg, 10deg);
+  pointer-events: all;
+  cursor: pointer;
+  @media only screen and (max-width: 900px) {
+    font-size: 1.5em;
+  }
+`
+
+const UpperRight = styled.div`
+  ${base}
+  text-align: right;
+  top: 40px;
+  right: 50px;
+  font-size: 2em;
+  transform: skew(-5deg, -10deg);
+  pointer-events: all;
+  cursor: pointer;
+  & > a {
+    color: indianred;
+    text-decoration: none;
+  }
+  @media only screen and (max-width: 900px) {
+    font-size: 1.5em;
   }
 `

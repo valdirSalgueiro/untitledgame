@@ -65,7 +65,7 @@ export default function Ship() {
   })
 
   return (
-    <group ref={group}>
+    <group ref={group} visible={isAlive}>
       <pointLight color="indianred" distance={400} intensity={5} position={[0, 100, -420]} />
       <group position={[0, 0, -50]}>
         <group ref={main}>

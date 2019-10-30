@@ -23,6 +23,7 @@ const [useStore, api] = create((set, get) => {
     explosions: [],
     socket,
     isAlive: false,
+    spawned: false,
 
     enemies: [],
 
@@ -62,6 +63,7 @@ const [useStore, api] = create((set, get) => {
           const { enemies, mutation } = get()
           const a = new THREE.Vector3(0, 0, 0)
           const distance = Math.round(a.distanceTo(mutation.player.position))
+          if (distance < 550) set({ isAlive: false })
 
           set({ distance })
 
@@ -92,6 +94,7 @@ const [useStore, api] = create((set, get) => {
         })
       },
       shoot(socketId) {
+        if (!get().isAlive) return
         set(state => ({ lasers: [...state.lasers, { time: Date.now(), socketId }] }))
         clearTimeout(cancelLaserTO)
         cancelLaserTO = setTimeout(
@@ -128,6 +131,7 @@ const [useStore, api] = create((set, get) => {
       },
       spawn(isAlive) {
         set({ isAlive })
+        set({ spawned: true })
       },
       updateName(playerName) {
         set({ playerName })

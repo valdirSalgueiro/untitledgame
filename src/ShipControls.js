@@ -10,7 +10,7 @@ const ShipControls = function(player, mouseRelative, actions) {
   this.mouseRelative = mouseRelative
   this.isAlive = false
   this.locked = false
-  this.player.position.copy(new THREE.Vector3(0, 0, 1000))
+  this.player.position.copy(new THREE.Vector3(0, 0, 600))
   this.playerName = ''
 
   this.update = function() {
