@@ -21,7 +21,7 @@ io.on('connection', function(socket) {
   socket.on('player-update', data => {
     game.updatePlayer(socket.id, data)
 
-    socket.broadcast.emit('player-update', { ...data, socketId: socket.id })
+    socket.broadcast.emit('player-update', { ...data, ...{ socketId: socket.id } })
   })
 
   socket.on('player-shoot', () => {

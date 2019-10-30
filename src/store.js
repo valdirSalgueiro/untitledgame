@@ -33,6 +33,7 @@ const [useStore, api] = create((set, get) => {
       player: new THREE.Object3D(),
       shipRotation: new THREE.Euler(0, 0, 0, 'YXZ'),
       shipPosition: new THREE.Vector3(),
+      worldPosition: new THREE.Vector3(),
       startTime: Date.now(),
       socketId: 'offline',
 
@@ -77,6 +78,7 @@ const [useStore, api] = create((set, get) => {
           const e = enemies.filter(actions.test)
           mutation.hits = e.length
           const lasers = get().lasers.filter(l => l.socketId === mutation.socketId)
+          //if (lasers.length > 0) console.log(e)
           if (mutation.hits && lasers.length && time - lasers[lasers.length - 1].time < 100) {
             actions.hitPlayer(e[0].socketId)
             socket.emit('player-hit', e[0].socketId)

@@ -9,7 +9,17 @@ export default function Hud() {
   const isAlive = useStore(state => state.isAlive)
   const spawned = useStore(state => state.spawned)
   const sound = useStore(state => state.sound)
+  const connected = useStore(state => state.connected)
   const toggle = useStore(state => state.actions.toggleSound)
+  let offline = <></>
+
+  if (!connected) {
+    offline = (
+      <Offline>
+        <h1>Offline</h1>
+      </Offline>
+    )
+  }
 
   if (spawned)
     if (isAlive) {
@@ -19,6 +29,7 @@ export default function Hud() {
             <h2>{distance}</h2>
             <h1>{points}</h1>
           </LowerLeft>
+          {offline}
           <Global />
         </>
       )
@@ -28,6 +39,7 @@ export default function Hud() {
           <Wasted>
             <h2>Wasted</h2>
           </Wasted>
+          {offline}
           <Global />
         </>
       )
@@ -39,6 +51,7 @@ export default function Hud() {
         <LowerLeft>
           <h2>{playerName}</h2>
         </LowerLeft>
+        {offline}
         <UpperLeft onClick={() => toggle()}>
           sound
           <br />
@@ -129,33 +142,6 @@ const Title = styled.div`
     }
   }
 `
-
-const LowerLeft = styled.div`
-  ${base}
-  bottom: 5px;
-  left: 50px;
-  transform: skew(-5deg, -10deg);
-  width: 200px;
-  & > h1 {
-    margin: 0;
-    font-size: 14em;
-    line-height: 1em;
-  }
-  & > h2 {
-    margin: 0;
-    font-size: 4em;
-    line-height: 1em;
-  }
-  @media only screen and (max-width: 900px) {
-    bottom: 30px;
-    & > h1 {
-      font-size: 6em !important;
-    }
-    & > h2 {
-      font-size: 3em !important;
-    }
-  }
-`
 const Global = createGlobalStyle`
   * {
     box-sizing: border-box;
@@ -186,6 +172,62 @@ const Global = createGlobalStyle`
     background: white;
   }
 `
+const Offline = styled.div`
+  ${base}
+  text-align: center;
+  vertical-align: middle;
+  top: 400px;
+  width: 100%;
+  height: 100%;
+  color: yellow;
+  & > h1 {
+    margin: 0;
+    font-size: 14em;
+    line-height: 1em;
+  }
+  & > h2 {
+    margin: 0;
+    font-size: 4em;
+    line-height: 1em;
+  }
+  @media only screen and (max-width: 900px) {
+    bottom: 30px;
+    & > h1 {
+      font-size: 6em !important;
+    }
+    & > h2 {
+      font-size: 3em !important;
+    }
+  }
+`
+
+const LowerLeft = styled.div`
+  ${base}
+  bottom: 5px;
+  left: 50px;
+  transform: skew(-5deg, -10deg);
+  width: 200px;
+  & > h1 {
+    margin: 0;
+    font-size: 14em;
+    line-height: 1em;
+  }
+  & > h2 {
+    margin: 0;
+    font-size: 4em;
+    line-height: 1em;
+  }
+  @media only screen and (max-width: 900px) {
+    bottom: 30px;
+    & > h1 {
+      font-size: 6em !important;
+    }
+    & > h2 {
+      font-size: 3em !important;
+    }
+  }
+`
+
 const UpperLeft = styled.div`
   ${base}
   top: 40px;

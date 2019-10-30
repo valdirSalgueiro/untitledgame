@@ -53,8 +53,6 @@ export default function Connection() {
   })
 
   socket.on('player-update', data => {
-    data.worldPosition = new THREE.Vector3(data.position.x, data.position.y, data.position.z)
-    data.worldPosition.add(new THREE.Vector3(data.shipPosition.x, data.shipPosition.y, data.shipPosition.z))
     actions.updatePlayer(data)
   })
 
@@ -67,7 +65,8 @@ export default function Connection() {
       position: mutation.player.position,
       rotation: mutation.player.rotation,
       shipRotation: mutation.shipRotation,
-      shipPosition: mutation.shipPosition
+      shipPosition: mutation.shipPosition,
+      worldPosition: mutation.worldPosition
     })
   }
 

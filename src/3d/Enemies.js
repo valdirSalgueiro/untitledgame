@@ -33,7 +33,7 @@ function Drone(data) {
   }, [data])
 
   useFrame(() => {
-    group.current.translateZ(-1.0)
+    //group.current.translateZ(-1.0)
     for (let i = 0; i < lasers.length; i++) {
       const group = laserGroup.current.children[i]
       group.position.z -= 20

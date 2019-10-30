@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-const ShipControls = function(player, mouseRelative, connected, actions) {
+const ShipControls = function(player, mouseRelative, actions) {
   this.player = player
   const scope = this
   this.keys = { SPACE: 32, LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 }
@@ -45,7 +45,6 @@ const ShipControls = function(player, mouseRelative, connected, actions) {
 
       if (keycode === 13) {
         if (!actions.isConnected()) {
-          console.log('offline!!!')
           return
         }
 

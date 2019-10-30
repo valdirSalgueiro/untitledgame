@@ -10,6 +10,7 @@ const hotpink = new THREE.Color('hotpink')
 const laserMaterial = new THREE.MeshBasicMaterial({ color: lightgreen })
 const crossMaterial = new THREE.MeshBasicMaterial({ color: hotpink, fog: false })
 const position = new THREE.Vector3()
+const worldPosition = new THREE.Vector3()
 const direction = new THREE.Vector3()
 
 export default function Ship() {
@@ -55,8 +56,10 @@ export default function Ship() {
 
     camera.position.copy(mutation.player.position)
     camera.rotation.copy(mutation.player.rotation)
+    mesh.current.getWorldPosition(worldPosition)
     mutation.shipPosition.copy(main.current.position)
     mutation.shipRotation.copy(main.current.rotation)
+    mutation.worldPosition.copy(worldPosition)
 
     // ...
     crossMaterial.color = mutation.hits ? lightgreen : hotpink
