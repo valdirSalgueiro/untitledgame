@@ -10,7 +10,8 @@ const [useStore, api] = create((set, get) => {
   let cancelLaserTO
   let cancelExplosionTO = undefined
   const box = new THREE.Box3()
-  const socket = io(':5000')
+  //const socket = io(':5000')
+  const socket = io()
 
   return {
     sound: false,
