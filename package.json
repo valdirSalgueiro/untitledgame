@@ -6,7 +6,6 @@
   "main": "src/index.js",
   "dependencies": {
     "express": "^4.17.1",
-    "nodemon": "^1.19.1",
     "react": "16.10.2",
     "react-dom": "16.10.2",
     "react-scripts": "3.2.0",
@@ -31,8 +30,8 @@
     "typescript": "3.3.3"
   },
   "scripts": {
-    "server": "nodemon src/server.js",
-    "start": "PORT=4000 react-scripts start",
+    "start": "node server.js",
+    "local": "PORT=4000 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
