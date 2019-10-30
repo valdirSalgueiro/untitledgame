@@ -10,6 +10,7 @@ const ShipControls = function(player, mouseRelative, connected, actions) {
   this.mouseRelative = mouseRelative
   this.isAlive = false
   this.locked = false
+  this.spawned = false
   this.player.position.copy(new THREE.Vector3(0, 0, 1000))
   this.playerName = ''
 
@@ -38,6 +39,8 @@ const ShipControls = function(player, mouseRelative, connected, actions) {
           break
       }
     } else {
+      if (scope.spawned) return
+
       const keycode = event.keyCode
 
       if (keycode === 13) {
@@ -46,6 +49,7 @@ const ShipControls = function(player, mouseRelative, connected, actions) {
           return
         }
 
+        scope.spawned = true
         actions.spawn(true)
         scope.isAlive = true
         //window.removeEventListener('keydown', handleKeyDown, false)

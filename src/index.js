@@ -21,9 +21,8 @@ function Controls() {
   const controls = useRef()
   const { player, mouseRelative } = useStore(state => state.mutation)
   const actions = useStore(state => state.actions)
-  const connected = useStore(state => state.connected)
   useFrame(() => controls.current.update())
-  return <shipControls args={[player, mouseRelative, connected, actions]} ref={controls} />
+  return <shipControls args={[player, mouseRelative, actions]} ref={controls} />
 }
 
 function App() {

@@ -179,6 +179,7 @@ const [useStore, api] = create((set, get) => {
         playAudio(audio.engine2, 0.3, true)
       },
       spawn(isAlive) {
+        if (get().isAlive) return
         get().mutation.player.position.copy(new THREE.Vector3(0, 0, 1000))
         set({ isAlive })
         set({ spawned: true })
