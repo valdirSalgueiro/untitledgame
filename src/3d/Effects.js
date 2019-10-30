@@ -16,19 +16,26 @@ export default function Effects() {
   const isAlive = useStore(state => state.isAlive)
   const spawned = useStore(state => state.spawned)
   useEffect(() => void composer.current.setSize(size.width, size.height), [size])
-  useFrame(() => composer.current.render(), 2)
-  if (spawned && !isAlive)
-    return (
-      <effectComposer args={[gl]} ref={composer}>
-        <renderPass attachArray="passes" camera={camera} scene={scene} />
+  useFrame(() => {
+    composer.current.render()
+  }, 2)
+  // bug while switching effects?
+  const children =
+    false && spawned ? (
+      <>
         <glitchPass args={[undefined]} attachArray="passes" />
-      </effectComposer>
+      </>
+    ) : (
+      <>
+        <unrealBloomPass args={[undefined, 1.6, 1, 0]} attachArray="passes" />
+        <filmPass args={[0.05, 0.5, 1500, false]} attachArray="passes" />
+      </>
     )
+
   return (
     <effectComposer args={[gl]} ref={composer}>
       <renderPass attachArray="passes" camera={camera} scene={scene} />
-      <unrealBloomPass args={[undefined, 1.6, 1, 0]} attachArray="passes" />
-      <filmPass args={[0.05, 0.5, 1500, false]} attachArray="passes" />
+      {children}
     </effectComposer>
   )
 }

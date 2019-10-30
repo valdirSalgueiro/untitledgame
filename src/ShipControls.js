@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-const ShipControls = function(player, mouseRelative, actions) {
+const ShipControls = function(player, mouseRelative, connected, actions) {
   this.player = player
   const scope = this
   this.keys = { SPACE: 32, LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 }
@@ -10,11 +10,12 @@ const ShipControls = function(player, mouseRelative, actions) {
   this.mouseRelative = mouseRelative
   this.isAlive = false
   this.locked = false
-  this.player.position.copy(new THREE.Vector3(0, 0, 600))
+  this.player.position.copy(new THREE.Vector3(0, 0, 1000))
   this.playerName = ''
 
   this.update = function() {
     if (scope.isAlive) {
+      //if (!scope.locked) {
       this.player.translateZ(-1.0)
       euler.setFromQuaternion(scope.player.quaternion)
 
@@ -32,7 +33,6 @@ const ShipControls = function(player, mouseRelative, actions) {
       switch (event.keyCode) {
         case scope.keys.SPACE:
           scope.locked = !scope.locked
-          console.log(scope.locked)
           break
         default:
           break
@@ -41,9 +41,14 @@ const ShipControls = function(player, mouseRelative, actions) {
       const keycode = event.keyCode
 
       if (keycode === 13) {
+        if (!actions.isConnected()) {
+          console.log('offline!!!')
+          return
+        }
+
         actions.spawn(true)
         scope.isAlive = true
-        window.removeEventListener('keydown', handleKeyDown, false)
+        //window.removeEventListener('keydown', handleKeyDown, false)
       } else {
         const valid =
           (keycode > 47 && keycode < 58) || // number keys

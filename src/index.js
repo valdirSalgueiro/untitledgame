@@ -21,8 +21,9 @@ function Controls() {
   const controls = useRef()
   const { player, mouseRelative } = useStore(state => state.mutation)
   const actions = useStore(state => state.actions)
+  const connected = useStore(state => state.connected)
   useFrame(() => controls.current.update())
-  return <shipControls args={[player, mouseRelative, actions]} ref={controls} />
+  return <shipControls args={[player, mouseRelative, connected, actions]} ref={controls} />
 }
 
 function App() {
@@ -48,10 +49,10 @@ function App() {
         <fog args={['black', 100, 700]} attach="fog" />
         <ambientLight intensity={0.25} />
         <Controls />
-        <Connection />
         <Particles />
         <Explosions />
         <Suspense fallback={null}>
+          <Connection />
           <Planets />
           <Enemies />
           <Ship />

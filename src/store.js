@@ -15,6 +15,7 @@ const [useStore, api] = create((set, get) => {
   return {
     sound: false,
     camera: undefined,
+    connected: false,
     playerName: 'Type your name',
     points: 0,
     distance: 0,
@@ -61,9 +62,12 @@ const [useStore, api] = create((set, get) => {
 
         addEffect(() => {
           const { enemies, mutation } = get()
+
           const a = new THREE.Vector3(0, 0, 0)
           const distance = Math.round(a.distanceTo(mutation.player.position))
-          if (distance < 550) set({ isAlive: false })
+          if (distance < 530) {
+            actions.killPlayer()
+          }
 
           set({ distance })
 
@@ -74,8 +78,8 @@ const [useStore, api] = create((set, get) => {
           mutation.hits = e.length
           const lasers = get().lasers.filter(l => l.socketId === mutation.socketId)
           if (mutation.hits && lasers.length && time - lasers[lasers.length - 1].time < 100) {
-            //socket.emit('player-hit', e.socketId)
-            console.log(`hit'em! ${e.socketId}`)
+            actions.hitPlayer(e[0].socketId)
+            socket.emit('player-hit', e[0].socketId)
 
             const update = { ...e[0], time: Date.now(), guid: guid++, scale: 1 + Math.random() * 2.5, position: e[0].worldPosition }
             set(state => ({ explosions: [...state.explosions, update] }))
@@ -94,7 +98,12 @@ const [useStore, api] = create((set, get) => {
         })
       },
       shoot(socketId) {
-        if (!get().isAlive) return
+        if (!get().spawned) return
+
+        if (!get().isAlive) {
+          get().actions.spawn(true)
+          return
+        }
         set(state => ({ lasers: [...state.lasers, { time: Date.now(), socketId }] }))
         clearTimeout(cancelLaserTO)
         cancelLaserTO = setTimeout(
@@ -110,15 +119,56 @@ const [useStore, api] = create((set, get) => {
         console.log('adding player')
         console.log(id)
         set(state => ({
-          enemies: [...state.enemies, { socketId: id, hit: new THREE.Vector3(), size: 10, scale: 1 }]
+          enemies: [...state.enemies, { socketId: id, hit: new THREE.Vector3(), size: 10, scale: 1, isAlive: false }]
+        }))
+        console.log(get().enemies)
+      },
+      killPlayer() {
+        set({ isAlive: false })
+      },
+      hitPlayer(id) {
+        if (id === socket.id) {
+          get().actions.killPlayer()
+          return
+        }
+        set(state => ({
+          enemies: state.enemies.map(item => {
+            if (item.socketId !== id) {
+              return item
+            }
+
+            return {
+              ...item,
+              ...{ isAlive: false }
+            }
+          })
         }))
       },
+      spawnPlayer(id) {
+        //console.log('spawnPlayer')
+        //console.log(id)
+        //console.log(get().enemies)
+        set(state => ({
+          enemies: state.enemies.map(item => {
+            if (item.socketId !== id) {
+              return item
+            }
+
+            return {
+              ...item,
+              ...{ isAlive: true }
+            }
+          })
+        }))
+        //console.log(get().enemies)
+      },
       removePlayer(id) {
-        console.log('removing player')
-        console.log(id)
+        //console.log('removing player')
+        //console.log(id)
         set(state => ({
           enemies: state.enemies.filter(e => e.socketId !== id)
         }))
+        //console.log(get().enemies)
       },
       updatePlayer(data) {
         set(state => ({ enemies: updateEnemies(state.enemies, data) }))
@@ -127,21 +177,28 @@ const [useStore, api] = create((set, get) => {
         set({ sound })
         playAudio(audio.engine, 1, true)
         playAudio(audio.engine2, 0.3, true)
-        //playAudio(audio.bg, 1, true)
       },
       spawn(isAlive) {
+        get().mutation.player.position.copy(new THREE.Vector3(0, 0, 1000))
         set({ isAlive })
         set({ spawned: true })
+        socket.emit('player-spawn')
       },
       updateName(playerName) {
         set({ playerName })
+      },
+      isConnected() {
+        return get().connected
+      },
+      connect(connected) {
+        set({ connected })
       },
       updateMouse({ clientX: x, clientY: y }) {
         get().mutation.mouse.set(x - window.innerWidth / 2, y - window.innerHeight / 2)
         get().mutation.mouseRelative.set(-0.5 + x / window.innerWidth, -0.5 + y / window.innerHeight)
       },
       test(data) {
-        if (data.worldPosition) {
+        if (data.isAlive && data.worldPosition) {
           box.min.copy(data.worldPosition)
           box.max.copy(data.worldPosition)
           box.expandByScalar(data.size * data.scale)
@@ -150,6 +207,7 @@ const [useStore, api] = create((set, get) => {
           data.distance = get().mutation.ray.origin.distanceTo(data.hit)
           return result
         }
+        return false
       }
     }
   }

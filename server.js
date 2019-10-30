@@ -28,6 +28,18 @@ io.on('connection', function(socket) {
     socket.broadcast.emit('player-shoot', socket.id)
   })
 
+  socket.on('player-hit', data => {
+    //console.log('player-hit')
+    //console.log(data)
+    socket.broadcast.emit('player-hit', data)
+  })
+
+  socket.on('player-spawn', () => {
+    //console.log('player-spawn')
+    //console.log(socket.id)
+    socket.broadcast.emit('player-spawn', socket.id)
+  })
+
   socket.on('disconnect', () => {
     console.log(`player disconnected ${socket.id}`)
     game.removePlayer(socket.id)

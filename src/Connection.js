@@ -11,9 +11,16 @@ export default function Connection() {
 
   socket.on('connect', () => {
     console.log('> Connected to server')
+    actions.connect(true)
+  })
+
+  socket.on('disconnect', () => {
+    console.log('> Disconnected')
+    actions.connect(false)
   })
 
   socket.on('bootstrap', data => {
+    actions.connect(true)
     console.log('> bootstrap')
     console.log(data.players)
     //actions.setSocketId(data.socketId)
@@ -29,6 +36,18 @@ export default function Connection() {
     actions.addPlayer(data)
   })
 
+  socket.on('player-hit', data => {
+    console.log('player-hit')
+    console.log(data)
+    actions.hitPlayer(data)
+  })
+
+  socket.on('player-spawn', data => {
+    console.log('player-spawn')
+    console.log(data)
+    actions.spawnPlayer(data)
+  })
+
   socket.on('player-remove', data => {
     actions.removePlayer(data)
   })
@@ -41,10 +60,6 @@ export default function Connection() {
 
   socket.on('player-shoot', data => {
     actions.shoot(data)
-  })
-
-  socket.on('disconnect', () => {
-    console.log('> Disconnected')
   })
 
   function update() {
